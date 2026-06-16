@@ -642,15 +642,17 @@ function renderItems() {
       <td><span class="badge ${item.active ? 'badge-green' : 'badge-gray'}">${item.active ? 'Ativo' : 'Inativo'}</span></td>
       <td>
         <button class="btn btn-outline btn-sm" onclick="editItem('${item.id}')">Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="toggleItem('${item.id}',${!item.active})">${item.active ? 'Remover' : 'Ativar'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}', '${item.name}')">🗑 Excluir</button>
       </td>
     </tr>
   `).join('');
 }
 
-async function toggleItem(id, active) {
-  await api(`checklist_items?id=eq.${id}`, { method: 'PATCH', body: { active } });
-  await loadAll(); toast(active ? 'Item ativado' : 'Item removido do check-list');
+async function deleteItem(id, name) {
+  if (!confirm('Excluir definitivamente o item "' + name + '"? Esta ação não pode ser desfeita.')) return;
+  await api(`checklist_items?id=eq.${id}`, { method: 'DELETE', prefer: '' });
+  await loadAll();
+  toast('Item excluído.');
 }
 
 // ============================================================
