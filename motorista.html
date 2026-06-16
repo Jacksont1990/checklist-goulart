@@ -338,6 +338,7 @@ let state = {
 // HELPERS
 // ============================================================
 async function supabase(path, options = {}) {
+  const method = options.method || 'GET';
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     headers: {
       'apikey': SUPABASE_KEY,
@@ -346,12 +347,13 @@ async function supabase(path, options = {}) {
       'Prefer': options.prefer || 'return=representation',
       ...options.headers
     },
-    method: options.method || 'GET',
+    method,
     body: options.body ? JSON.stringify(options.body) : undefined
   });
-  if (!res.ok) throw new Error(await res.text());
   const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  if (!res.ok) { console.error('API error', res.status, path, text); return method === 'GET' ? [] : null; }
+  if (!text) return null;
+  try { return JSON.parse(text); } catch(e) { return []; }
 }
 
 async function uploadPhoto(file, checklistId, itemId) {
