@@ -408,18 +408,21 @@ const SUPERVISOR_CREDENTIALS = { username: 'admin', password: 'goulart2025', nam
 // HELPERS
 // ============================================================
 async function api(path, options = {}) {
+  const method = options.method || 'GET';
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': options.prefer || 'return=representation',
+  };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || 'return=representation',
-    },
-    method: options.method || 'GET',
+    headers, method,
     body: options.body ? JSON.stringify(options.body) : undefined
   });
   const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  if (!res.ok) { console.error('API error', res.status, path, text); return method === 'GET' ? [] : null; }
+  if (!text) return null;
+  try { return JSON.parse(text); } catch(e) { return []; }
 }
 
 function toast(msg, duration = 2500) {
@@ -487,19 +490,19 @@ let dashPeriodType = 'current';
 async function loadAll() {
   try {
     const [vehicles, drivers, items, checklists, responses, emails] = await Promise.all([
-      api('vehicles?order=plate.asc'),
-      api('drivers?order=name.asc'),
-      api('checklist_items?order=order_index.asc'),
-      api('checklists?order=started_at.desc'),
+      api('vehicles?select=*'),
+      api('drivers?select=*'),
+      api('checklist_items?select=*'),
+      api('checklists?select=*&order=started_at.desc'),
       api('checklist_responses?select=*'),
-      api('notification_emails?order=email.asc')
+      api('notification_emails?select=*')
     ]);
-    DATA.vehicles   = vehicles   || [];
-    DATA.drivers    = drivers    || [];
-    DATA.items      = items      || [];
-    DATA.checklists = checklists || [];
-    DATA.responses  = responses  || [];
-    DATA.emails     = emails     || [];
+    DATA.vehicles   = Array.isArray(vehicles)   ? vehicles   : [];
+    DATA.drivers    = Array.isArray(drivers)    ? drivers    : [];
+    DATA.items      = Array.isArray(items)      ? items      : [];
+    DATA.checklists = Array.isArray(checklists) ? checklists : [];
+    DATA.responses  = Array.isArray(responses)  ? responses  : [];
+    DATA.emails     = Array.isArray(emails)     ? emails     : [];
     renderAll();
   } catch(e) { toast('Erro ao carregar dados'); console.error(e); }
 }
