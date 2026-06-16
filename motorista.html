@@ -445,9 +445,12 @@ async function loadVehicles() {
 function renderVehicles(list) {
   const el = document.getElementById('vehicleList');
   if (!list.length) { el.innerHTML = '<p style="color:var(--gray-400);font-size:0.85rem;">Nenhum veículo encontrado</p>'; return; }
+  // store vehicles globally for click handler
+  window._vehicleMap = {};
+  list.forEach(v => window._vehicleMap[v.id] = v);
   el.innerHTML = list.map(v => `
     <div class="vehicle-card ${state.vehicle?.id === v.id ? 'selected' : ''}"
-         id="vc-${v.id}" onclick="selectVehicle(${JSON.stringify(v).replace(/"/g,'&quot;')})">
+         id="vc-${v.id}" onclick="selectVehicleById('${v.id}')">
       <div class="plate">${v.plate}</div>
       <div class="meta">${v.type} • ${v.year || '—'}</div>
     </div>
@@ -459,10 +462,16 @@ function filterVehicles() {
   renderVehicles(q ? allVehicles.filter(v => v.plate.includes(q)) : allVehicles);
 }
 
+function selectVehicleById(id) {
+  const v = window._vehicleMap && window._vehicleMap[id];
+  if (!v) return;
+  selectVehicle(v);
+}
+
 function selectVehicle(v) {
   state.vehicle = v;
   document.querySelectorAll('.vehicle-card').forEach(el => el.classList.remove('selected'));
-  const el = document.getElementById(`vc-${v.id}`);
+  const el = document.getElementById('vc-' + v.id);
   if (el) el.classList.add('selected');
   document.getElementById('btnStartChecklist').disabled = false;
 }
