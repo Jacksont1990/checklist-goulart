@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-list Goulart — Supervisor</title>
+<style>
+  :root {
+    --red:      #C8102E;
+    --red-dark: #9B0D22;
+    --red-light:#F5E6E9;
+    --black:    #111111;
+    --gray-900: #1A1A1A;
+    --gray-700: #3D3D3D;
+    --gray-400: #9A9A9A;
+    --gray-100: #F4F4F4;
+    --white:    #FFFFFF;
+    --green:    #15803D;
+    --green-bg: #DCFCE7;
+    --amber:    #B45309;
+    --amber-bg: #FEF3C7;
+    --sidebar-w: 220px;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--black); min-height: 100vh; }
+
+  /* LOGIN */
+  #loginScreen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 100%);
+  }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px 36px; width: 340px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .login-box .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .login-box h2 { font-size: 1.15rem; font-weight: 800; }
+  .login-box p  { font-size: 0.82rem; color: var(--gray-400); margin-top: 2px; }
+  .login-box label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; margin-top: 14px; }
+  .login-box input {
+    width: 100%; padding: 11px 13px; border: 1.5px solid #DDD; border-radius: 8px;
+    font-size: 0.95rem; outline: none; transition: border-color 0.15s;
+  }
+  .login-box input:focus { border-color: var(--red); }
+
+  /* APP SHELL */
+  #appShell { display: none; min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: var(--red); color: white;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1rem; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; font-size: 0.85rem; opacity: 0.9; }
+  .btn-logout { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+  .btn-logout:hover { background: rgba(255,255,255,0.3); }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; top: 56px; left: 0; bottom: 0;
+    width: var(--sidebar-w); background: var(--gray-900);
+    padding: 20px 0; overflow-y: auto; z-index: 90;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 20px; cursor: pointer; color: rgba(255,255,255,0.65);
+    font-size: 0.88rem; font-weight: 500; transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+  .nav-item.active { color: white; background: rgba(200,16,46,0.25); border-left-color: var(--red); }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar-w); margin-top: 56px; padding: 28px 24px; }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px; }
+  .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 22px; }
+  .stat-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; border-left: 4px solid transparent; }
+  .stat-card.red   { border-left-color: var(--red); }
+  .stat-card.green { border-left-color: var(--green); }
+  .stat-card.amber { border-left-color: var(--amber); }
+  .stat-num  { font-size: 2rem; font-weight: 800; line-height: 1; }
+  .stat-label{ font-size: 0.78rem; color: var(--gray-400); margin-top: 4px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { text-align: left; padding: 10px 12px; font-size: 0.75rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid #EEE; }
+  td { padding: 11px 12px; border-bottom: 1px solid #F2F2F2; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-100); }
+
+  /* BADGES */
+  .badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-red   { background: var(--red-light); color: var(--red); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-gray  { background: #EEE; color: var(--gray-700); }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: none; border-radius: 7px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+  .btn-red   { background: var(--red); color: white; }
+  .btn-red:hover { background: var(--red-dark); }
+  .btn-outline { background: transparent; color: var(--red); border: 2px solid var(--red); }
+  .btn-danger { background: #FEE2E2; color: #B91C1C; }
+  .btn-sm { padding: 5px 11px; font-size: 0.78rem; }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 10px 13px; border: 1.5px solid #DDD; border-radius: 7px;
+    font-size: 0.9rem; outline: none; transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--red); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: white; border-radius: 14px; padding: 28px; width: 420px; max-width: 95vw;
+    transform: translateY(20px); transition: transform 0.2s;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal h3 { font-size: 1rem; font-weight: 800; margin-bottom: 20px; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .toolbar input[type="search"] { padding: 8px 13px; border: 1.5px solid #DDD; border-radius: 7px; font-size: 0.88rem; outline: none; width: 200px; }
+  .toolbar input:focus { border-color: var(--red); }
+
+  /* TOAST */
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 10px 22px; border-radius: 99px; font-size: 0.85rem; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999; white-space: nowrap; }
+  #toast.show { opacity: 1; }
+
+  .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* PHOTO THUMBNAIL */
+  .photo-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid #EEE; cursor: pointer; }
+
+  /* PERIOD FILTER */
+  .period-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .period-tab { padding: 7px 16px; border-radius: 7px; border: 1.5px solid #DDD; background: white; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--gray-700); }
+  .period-tab.active { background: var(--red); color: white; border-color: var(--red); }
+
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 16px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 38 38" fill="none">
+        <rect width="38" height="38" rx="8" fill="#C8102E"/>
+        <path d="M6 26L10 14h18l4 12H6z" fill="white" fill-opacity="0.9"/>
+        <circle cx="12" cy="28" r="3" fill="white"/>
+        <circle cx="26" cy="28" r="3" fill="white"/>
+      </svg>
+      <div>
+        <h2>Goulart Transportes</h2>
+        <p>Painel do Supervisor</p>
+      </div>
+    </div>
+    <label>Usuário</label>
+    <input type="text" id="loginUser" placeholder="admin" value="admin">
+    <label>Senha</label>
+    <input type="password" id="loginPass" placeholder="••••••••">
+    <button class="btn btn-red" style="width:100%;margin-top:20px;padding:12px;font-size:0.95rem;" onclick="doLogin()">Entrar</button>
+    <p id="loginErr" style="color:var(--red);font-size:0.82rem;margin-top:10px;display:none;">Usuário ou senha incorretos.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <svg width="28" height="28" viewBox="0 0 38 38" fill="none">
+        <rect width="38" height="38" rx="8" fill="rgba(255,255,255,0.2)"/>
+        <path d="M6 26L10 14h18l4 12H6z" fill="white"/>
+        <circle cx="12" cy="28" r="3" fill="white"/>
+        <circle cx="26" cy="28" r="3" fill="white"/>
+      </svg>
+      Goulart — Supervisor
+    </div>
+    <div class="topbar-right">
+      <span id="supervisorName"></span>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showSection('vehicles')" id="nav-vehicles">
+      <span class="nav-icon">🚛</span> Veículos
+    </div>
+    <div class="nav-item" onclick="showSection('drivers')" id="nav-drivers">
+      <span class="nav-icon">👤</span> Motoristas
+    </div>
+    <div class="nav-item" onclick="showSection('items')" id="nav-items">
+      <span class="nav-icon">✅</span> Itens do Check-list
+    </div>
+    <div class="nav-item" onclick="showSection('history')" id="nav-history">
+      <span class="nav-icon">📋</span> Histórico
+    </div>
+    <div class="nav-item" onclick="showSection('emails')" id="nav-emails">
+      <span class="nav-icon">📧</span> Notificações
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="section-dashboard">
+      <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:20px;">Dashboard</h2>
+      <div class="period-tabs">
+        <button class="period-tab active" onclick="setDashPeriod('current',this)">Período atual</button>
+        <button class="period-tab" onclick="setDashPeriod('prev',this)">Período anterior</button>
+      </div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card red"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total de veículos</div></div>
+        <div class="stat-card green"><div class="stat-num" id="statDone">—</div><div class="stat-label">Check-lists feitos</div></div>
+        <div class="stat-card amber"><div class="stat-num" id="statPending">—</div><div class="stat-label">Pendentes</div></div>
+        <div class="stat-card red"><div class="stat-num" id="statNok">—</div><div class="stat-label">Não conformidades</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🚛 Status por veículo</div>
+        <div class="toolbar">
+          <input type="search" placeholder="Buscar placa..." id="dashSearch" oninput="filterDash()">
+          <select id="dashFilter" onchange="filterDash()" style="padding:8px 12px;border:1.5px solid #DDD;border-radius:7px;font-size:0.85rem;">
+            <option value="">Todos</option>
+            <option value="concluido">Feito</option>
+            <option value="pendente">Pendente</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Placa</th><th>Tipo</th><th>Motorista</th><th>Status</th><th>Não conf.</th><th>Data</th>
+            </tr></thead>
+            <tbody id="dashTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VEÍCULOS -->
+    <div class="section" id="section-vehicles">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.25rem;font-weight:800;">Veículos</h2>
+        <button class="btn btn-red" onclick="openModal('vehicle')">+ Adicionar</button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <input type="search" placeholder="Buscar placa..." oninput="filterTable('vehicleTable',this.value)">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Placa</th><th>Tipo</th><th>Ano</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="vehicleTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTORISTAS -->
+    <div class="section" id="section-drivers">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.25rem;font-weight:800;">Motoristas</h2>
+        <button class="btn btn-red" onclick="openModal('driver')">+ Adicionar</button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <input type="search" placeholder="Buscar nome ou CPF..." oninput="filterTable('driverTable',this.value)">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>CPF / Matrícula</th><th>Veículo</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="driverTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITENS DO CHECK-LIST -->
+    <div class="section" id="section-items">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.25rem;font-weight:800;">Itens do Check-list</h2>
+        <button class="btn btn-red" onclick="openModal('item')">+ Adicionar item</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Item</th><th>Categoria</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="itemTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="section" id="section-history">
+      <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:20px;">Histórico de Check-lists</h2>
+      <div class="card">
+        <div class="toolbar">
+          <input type="search" placeholder="Buscar placa..." id="histSearch" oninput="filterTable('histTable',this.value)">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Veículo</th><th>Motorista</th><th>Período</th><th>Data</th><th>Status</th><th>N/C</th><th>Ver</th></tr></thead>
+            <tbody id="histTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMAILS -->
+    <div class="section" id="section-emails">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.25rem;font-weight:800;">E-mails de Notificação</h2>
+        <button class="btn btn-red" onclick="openModal('email')">+ Adicionar e-mail</button>
+      </div>
+      <p style="font-size:0.88rem;color:var(--gray-400);margin-bottom:16px;">
+        Esses endereços receberão um e-mail automático sempre que um item for marcado como não conforme.
+      </p>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Ativo</th><th>Ações</th></tr></thead>
+            <tbody id="emailTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /appShell -->
+
+<!-- MODAIS -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox">
+    <h3 id="modalTitle">Modal</h3>
+    <div id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-red btn-sm" id="modalSaveBtn" onclick="saveModal()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHES CHECK-LIST -->
+<div class="modal-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="modal" id="detailBox" style="width:560px;">
+    <h3 id="detailTitle">Detalhes</h3>
+    <div id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeDetail()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG — substitua pelos seus dados
+// ============================================================
+const SUPABASE_URL = 'https://sedoornofsugphyzezxm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZG9vcm5vZnN1Z3BoeXplenhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDE4MTQsImV4cCI6MjA2NTM3NzgxNH0.bt2HREpeOkcSPhFYXN33S9ZxDlSt8sXofg2vDvlwVvw';
+
+// Senha do supervisor (simplifique: compare localmente ou use Supabase Auth)
+// Para produção, use Supabase Auth ou bcrypt na Edge Function
+const SUPERVISOR_CREDENTIALS = { username: 'admin', password: 'goulart2025', name: 'Supervisor' };
+
+// ============================================================
+// HELPERS
+// ============================================================
+async function api(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+    },
+    method: options.method || 'GET',
+    body: options.body ? JSON.stringify(options.body) : undefined
+  });
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+function getPeriod(type = 'current') {
+  const now  = new Date();
+  let y = now.getFullYear(), m = now.getMonth(), day = now.getDate();
+  if (type === 'prev') { if (day <= 15) { m--; if (m < 0) { m = 11; y--; } day = 16; } else { day = 1; } }
+  let start, end;
+  if (day <= 15) { start = new Date(y, m, 1); end = new Date(y, m, 15); }
+  else           { start = new Date(y, m, 16); end = new Date(y, m + 1, 0); }
+  const fmt = d => d.toISOString().split('T')[0];
+  return { start: fmt(start), end: fmt(end) };
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (user === SUPERVISOR_CREDENTIALS.username && pass === SUPERVISOR_CREDENTIALS.password) {
+    document.getElementById('loginScreen').style.display  = 'none';
+    document.getElementById('appShell').style.display     = 'block';
+    document.getElementById('supervisorName').textContent = SUPERVISOR_CREDENTIALS.name;
+    loadAll();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appShell').style.display    = 'none';
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+}
+
+// ============================================================
+// DATA
+// ============================================================
+let DATA = { vehicles: [], drivers: [], items: [], checklists: [], responses: [], emails: [] };
+let dashPeriodType = 'current';
+
+async function loadAll() {
+  try {
+    const [vehicles, drivers, items, checklists, responses, emails] = await Promise.all([
+      api('vehicles?order=plate.asc'),
+      api('drivers?order=name.asc'),
+      api('checklist_items?order=order_index.asc'),
+      api('checklists?order=started_at.desc'),
+      api('checklist_responses?select=*'),
+      api('notification_emails?order=email.asc')
+    ]);
+    DATA.vehicles   = vehicles   || [];
+    DATA.drivers    = drivers    || [];
+    DATA.items      = items      || [];
+    DATA.checklists = checklists || [];
+    DATA.responses  = responses  || [];
+    DATA.emails     = emails     || [];
+    renderAll();
+  } catch(e) { toast('Erro ao carregar dados'); console.error(e); }
+}
+
+function renderAll() {
+  renderDashboard();
+  renderVehicles();
+  renderDrivers();
+  renderItems();
+  renderHistory();
+  renderEmails();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+let dashRows = [];
+
+function setDashPeriod(type, btn) {
+  dashPeriodType = type;
+  document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const period = getPeriod(dashPeriodType);
+  const periodChecklists = DATA.checklists.filter(c =>
+    c.period_start === period.start && c.period_end === period.end
+  );
+
+  const doneIds  = new Set(periodChecklists.filter(c => c.status === 'concluido').map(c => c.vehicle_id));
+  const nokCount = DATA.responses.filter(r => {
+    const cl = DATA.checklists.find(c => c.id === r.checklist_id);
+    return r.status === 'nao_conforme' && cl && cl.period_start === period.start;
+  }).length;
+
+  document.getElementById('statTotal').textContent   = DATA.vehicles.filter(v => v.active).length;
+  document.getElementById('statDone').textContent    = doneIds.size;
+  document.getElementById('statPending').textContent = DATA.vehicles.filter(v => v.active).length - doneIds.size;
+  document.getElementById('statNok').textContent     = nokCount;
+
+  dashRows = DATA.vehicles.filter(v => v.active).map(v => {
+    const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.status === 'concluido');
+    const nokItems = cl ? DATA.responses.filter(r => r.checklist_id === cl.id && r.status === 'nao_conforme').length : 0;
+    const driver = DATA.drivers.find(d => d.vehicle_id === v.id);
+    return { v, cl, nokItems, driverName: cl?.driver_name || driver?.name || '—' };
+  });
+
+  renderDashTable(dashRows);
+}
+
+function renderDashTable(rows) {
+  document.getElementById('dashTable').innerHTML = rows.map(({ v, cl, nokItems, driverName }) => `
+    <tr>
+      <td><strong>${v.plate}</strong></td>
+      <td>${v.type}</td>
+      <td>${driverName}</td>
+      <td>${cl
+        ? '<span class="badge badge-green">✔ Feito</span>'
+        : '<span class="badge badge-amber">⏳ Pendente</span>'}</td>
+      <td>${nokItems > 0 ? `<span class="badge badge-red">${nokItems}</span>` : '<span class="badge badge-gray">0</span>'}</td>
+      <td>${cl ? fmtDate(cl.finished_at) : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function filterDash() {
+  const q      = document.getElementById('dashSearch').value.toUpperCase();
+  const filter = document.getElementById('dashFilter').value;
+  const rows   = dashRows.filter(r => {
+    const matchQ = !q || r.v.plate.includes(q);
+    const matchF = !filter ||
+      (filter === 'concluido' && r.cl) ||
+      (filter === 'pendente'  && !r.cl);
+    return matchQ && matchF;
+  });
+  renderDashTable(rows);
+}
+
+// ============================================================
+// VEHICLES
+// ============================================================
+function renderVehicles() {
+  document.getElementById('vehicleTable').innerHTML = DATA.vehicles.map(v => `
+    <tr>
+      <td><strong>${v.plate}</strong></td>
+      <td>${v.type}</td>
+      <td>${v.year || '—'}</td>
+      <td><span class="badge ${v.active ? 'badge-green' : 'badge-gray'}">${v.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editVehicle('${v.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="toggleVehicle('${v.id}',${!v.active})">${v.active ? 'Desativar' : 'Ativar'}</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function toggleVehicle(id, active) {
+  await api(`vehicles?id=eq.${id}`, { method: 'PATCH', body: { active } });
+  await loadAll(); toast(active ? 'Veículo ativado' : 'Veículo desativado');
+}
+
+// ============================================================
+// DRIVERS
+// ============================================================
+function renderDrivers() {
+  document.getElementById('driverTable').innerHTML = DATA.drivers.map(d => {
+    const v = DATA.vehicles.find(v => v.id === d.vehicle_id);
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td>${d.cpf_matricula}</td>
+      <td>${v ? v.plate : '—'}</td>
+      <td><span class="badge ${d.active ? 'badge-green' : 'badge-gray'}">${d.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editDriver('${d.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="toggleDriver('${d.id}',${!d.active})">${d.active ? 'Desativar' : 'Ativar'}</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleDriver(id, active) {
+  await api(`drivers?id=eq.${id}`, { method: 'PATCH', body: { active } });
+  await loadAll(); toast(active ? 'Motorista ativado' : 'Motorista desativado');
+}
+
+// ============================================================
+// ITEMS
+// ============================================================
+function renderItems() {
+  document.getElementById('itemTable').innerHTML = DATA.items.map((item, i) => `
+    <tr>
+      <td>${item.order_index}</td>
+      <td><strong>${item.name}</strong></td>
+      <td><span class="badge badge-gray">${item.category}</span></td>
+      <td><span class="badge ${item.active ? 'badge-green' : 'badge-gray'}">${item.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editItem('${item.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="toggleItem('${item.id}',${!item.active})">${item.active ? 'Remover' : 'Ativar'}</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function toggleItem(id, active) {
+  await api(`checklist_items?id=eq.${id}`, { method: 'PATCH', body: { active } });
+  await loadAll(); toast(active ? 'Item ativado' : 'Item removido do check-list');
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function renderHistory() {
+  document.getElementById('histTable').innerHTML = DATA.checklists.map(c => {
+    const v   = DATA.vehicles.find(v => v.id === c.vehicle_id);
+    const nok = DATA.responses.filter(r => r.checklist_id === c.id && r.status === 'nao_conforme').length;
+    return `<tr>
+      <td><strong>${v?.plate || '—'}</strong></td>
+      <td>${c.driver_name}</td>
+      <td style="font-size:0.8rem;">${c.period_start} a ${c.period_end}</td>
+      <td style="font-size:0.8rem;">${fmtDate(c.started_at)}</td>
+      <td><span class="badge ${c.status === 'concluido' ? 'badge-green' : 'badge-amber'}">${c.status === 'concluido' ? 'Concluído' : 'Em andamento'}</span></td>
+      <td>${nok > 0 ? `<span class="badge badge-red">${nok}</span>` : '<span class="badge badge-gray">0</span>'}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="showDetail('${c.id}')">Ver</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function showDetail(clId) {
+  const cl   = DATA.checklists.find(c => c.id === clId);
+  const v    = DATA.vehicles.find(v => v.id === cl.vehicle_id);
+  const rows = DATA.responses.filter(r => r.checklist_id === clId);
+  document.getElementById('detailTitle').textContent = `Check-list — ${v?.plate}`;
+  document.getElementById('detailBody').innerHTML = `
+    <p style="font-size:0.85rem;color:var(--gray-700);margin-bottom:14px;">
+      Motorista: <strong>${cl.driver_name}</strong> &nbsp;•&nbsp;
+      ${fmtDate(cl.started_at)}
+    </p>
+    <table style="width:100%;font-size:0.85rem;">
+      <thead><tr><th>Item</th><th>Status</th><th>Foto</th></tr></thead>
+      <tbody>
+        ${rows.map(r => {
+          const item = DATA.items.find(i => i.id === r.item_id);
+          return `<tr>
+            <td>${item?.name || r.item_id}</td>
+            <td><span class="badge ${r.status === 'conforme' ? 'badge-green' : 'badge-red'}">${r.status === 'conforme' ? '✔ OK' : '✖ N/C'}</span></td>
+            <td>${r.photo_url ? `<img class="photo-thumb" src="${r.photo_url}" onclick="window.open('${r.photo_url}','_blank')">` : '—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+
+// ============================================================
+// EMAILS
+// ============================================================
+function renderEmails() {
+  document.getElementById('emailTable').innerHTML = DATA.emails.map(e => `
+    <tr>
+      <td>${e.name || '—'}</td>
+      <td>${e.email}</td>
+      <td><span class="badge ${e.active ? 'badge-green' : 'badge-gray'}">${e.active ? 'Sim' : 'Não'}</span></td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteEmail('${e.id}')">Remover</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function deleteEmail(id) {
+  if (!confirm('Remover este e-mail?')) return;
+  await api(`notification_emails?id=eq.${id}`, { method: 'DELETE', prefer: '' });
+  await loadAll(); toast('E-mail removido');
+}
+
+// ============================================================
+// MODAL GENÉRICO
+// ============================================================
+let modalType = null;
+let editId    = null;
+
+function openModal(type, id = null) {
+  modalType = type; editId = id;
+  const titles = { vehicle:'Veículo', driver:'Motorista', item:'Item do Check-list', email:'E-mail de Notificação' };
+  document.getElementById('modalTitle').textContent = (id ? 'Editar ' : 'Adicionar ') + titles[type];
+  document.getElementById('modalBody').innerHTML = buildForm(type, id);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function buildForm(type, id) {
+  if (type === 'vehicle') {
+    const v = id ? DATA.vehicles.find(x => x.id === id) : {};
+    return `
+      <div class="form-row">
+        <div class="form-group"><label>Placa</label><input id="f_plate" value="${v?.plate||''}" placeholder="ABC1234"></div>
+        <div class="form-group"><label>Tipo</label>
+          <select id="f_type">
+            <option ${v?.type==='Caminhão'?'selected':''}>Caminhão</option>
+            <option ${v?.type==='Van'?'selected':''}>Van</option>
+            <option ${v?.type==='Carreta'?'selected':''}>Carreta</option>
+            <option ${v?.type==='Utilitário'?'selected':''}>Utilitário</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Ano</label><input id="f_year" type="number" value="${v?.year||''}" placeholder="2020"></div>
+    `;
+  }
+  if (type === 'driver') {
+    const d = id ? DATA.drivers.find(x => x.id === id) : {};
+    const vOptions = DATA.vehicles.filter(v => v.active).map(v =>
+      `<option value="${v.id}" ${d?.vehicle_id === v.id ? 'selected':''}>${v.plate}</option>`
+    ).join('');
+    return `
+      <div class="form-group"><label>Nome completo</label><input id="f_name" value="${d?.name||''}" placeholder="João da Silva"></div>
+      <div class="form-group"><label>CPF ou Matrícula</label><input id="f_cpf" value="${d?.cpf_matricula||''}" placeholder="Ex: 123.456.789-00 ou GT0042"></div>
+      <div class="form-group"><label>Veículo vinculado</label>
+        <select id="f_vehicle"><option value="">— Sem vínculo —</option>${vOptions}</select>
+      </div>
+    `;
+  }
+  if (type === 'item') {
+    const item = id ? DATA.items.find(x => x.id === id) : {};
+    return `
+      <div class="form-group"><label>Nome do item</label><input id="f_iname" value="${item?.name||''}" placeholder="Ex: Pneus dianteiros"></div>
+      <div class="form-group"><label>Categoria</label>
+        <select id="f_icat">
+          ${['Pneus','Freios','Fluidos','Iluminação','Cabine','Segurança','Documentação','Carroceria','Geral'].map(c =>
+            `<option ${item?.category===c?'selected':''}>${c}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label>Ordem</label><input id="f_iorder" type="number" value="${item?.order_index||0}"></div>
+    `;
+  }
+  if (type === 'email') {
+    return `
+      <div class="form-group"><label>Nome</label><input id="f_ename" placeholder="Ex: Gerente de Frota"></div>
+      <div class="form-group"><label>E-mail</label><input id="f_email" type="email" placeholder="email@goulart.com.br"></div>
+    `;
+  }
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); modalType = null; editId = null; }
+
+async function saveModal() {
+  const btn = document.getElementById('modalSaveBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    if (modalType === 'vehicle') {
+      const body = { plate: document.getElementById('f_plate').value.trim().toUpperCase(), type: document.getElementById('f_type').value, year: parseInt(document.getElementById('f_year').value) || null };
+      if (editId) await api(`vehicles?id=eq.${editId}`, { method:'PATCH', body });
+      else        await api('vehicles', { method:'POST', body });
+    }
+    if (modalType === 'driver') {
+      const body = { name: document.getElementById('f_name').value.trim(), cpf_matricula: document.getElementById('f_cpf').value.trim(), vehicle_id: document.getElementById('f_vehicle').value || null };
+      if (editId) await api(`drivers?id=eq.${editId}`, { method:'PATCH', body });
+      else        await api('drivers', { method:'POST', body });
+    }
+    if (modalType === 'item') {
+      const body = { name: document.getElementById('f_iname').value.trim(), category: document.getElementById('f_icat').value, order_index: parseInt(document.getElementById('f_iorder').value) || 0 };
+      if (editId) await api(`checklist_items?id=eq.${editId}`, { method:'PATCH', body });
+      else        await api('checklist_items', { method:'POST', body });
+    }
+    if (modalType === 'email') {
+      const body = { name: document.getElementById('f_ename').value.trim(), email: document.getElementById('f_email').value.trim() };
+      await api('notification_emails', { method:'POST', body });
+    }
+    closeModal();
+    await loadAll();
+    toast('Salvo com sucesso!');
+  } catch(e) {
+    toast('Erro ao salvar. Verifique os dados.');
+    console.error(e);
+  }
+  btn.disabled = false; btn.textContent = 'Salvar';
+}
+
+function editVehicle(id) { openModal('vehicle', id); }
+function editDriver(id)  { openModal('driver', id);  }
+function editItem(id)    { openModal('item', id);    }
+
+// ============================================================
+// FILTER TABLE (genérico)
+// ============================================================
+function filterTable(tableId, query) {
+  const q = query.toUpperCase();
+  document.querySelectorAll(`#${tableId} tr`).forEach(tr => {
+    tr.style.display = !q || tr.textContent.toUpperCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
