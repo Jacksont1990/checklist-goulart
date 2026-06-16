@@ -248,10 +248,10 @@
     <label for="vehicleSearch">Buscar veículo pela placa</label>
     <input type="search" id="vehicleSearch" placeholder="Ex: ABC1234" oninput="filterVehicles()">
     <div id="vehicleList"></div>
+    <button class="btn btn-red" id="btnStartChecklist" disabled onclick="goToChecklist()" style="margin-top:12px;">
+      Iniciar Check-list
+    </button>
   </div>
-  <button class="btn btn-red" id="btnStartChecklist" disabled onclick="goToChecklist()">
-    Iniciar Check-list
-  </button>
 </div>
 
 <!-- TELA 3: CHECK-LIST (item a item) -->
@@ -473,29 +473,35 @@ function selectVehicle(v) {
   document.querySelectorAll('.vehicle-card').forEach(el => el.classList.remove('selected'));
   const el = document.getElementById('vc-' + v.id);
   if (el) el.classList.add('selected');
-  document.getElementById('btnStartChecklist').disabled = false;
+  const btn = document.getElementById('btnStartChecklist');
+  btn.disabled = false;
+  btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 async function goToChecklist() {
   if (!state.vehicle) return;
   state.period    = getPeriod();
-  state.items     = await supabase('checklist_items?active=eq.true&order=order_index.asc');
+  state.items     = await supabase('checklist_items?active=eq.true&order=order_index.asc') || [];
   state.currentIndex = 0;
   state.responses    = [];
 
   // Criar registro de checklist no banco
-  const rows = await supabase('checklists', {
-    method: 'POST',
-    body: {
-      vehicle_id:   state.vehicle.id,
-      driver_id:    state.driver.id,
-      driver_name:  state.driver.name,
-      status:       'em_andamento',
-      period_start: state.period.start,
-      period_end:   state.period.end
-    }
-  });
-  state.checklistId = rows[0].id;
+  let state_checklistId = null;
+  try {
+    const rows = await supabase('checklists', {
+      method: 'POST',
+      body: {
+        vehicle_id:   state.vehicle.id,
+        driver_id:    state.driver.id,
+        driver_name:  state.driver.name,
+        status:       'em_andamento',
+        period_start: state.period.start,
+        period_end:   state.period.end
+      }
+    });
+    if (rows && rows[0]) state_checklistId = rows[0].id;
+  } catch(e) { console.warn('Checklist insert error:', e); }
+  state.checklistId = state_checklistId;
 
   document.getElementById('checkPlate').textContent  = state.vehicle.plate;
   document.getElementById('checkPeriod').textContent = state.period.label;
