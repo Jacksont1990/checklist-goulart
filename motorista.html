@@ -1,552 +1,105 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check-list Goulart — Motorista</title>
-<style>
-  :root {
-    --red:       #C8102E;
-    --red-dark:  #9B0D22;
-    --red-light: #F5E6E9;
-    --black:     #111111;
-    --gray-900:  #1A1A1A;
-    --gray-700:  #3D3D3D;
-    --gray-400:  #9A9A9A;
-    --gray-100:  #F4F4F4;
-    --white:     #FFFFFF;
-    --green:     #15803D;
-    --green-bg:  #DCFCE7;
-    --amber:     #B45309;
-    --amber-bg:  #FEF3C7;
-    --radius:    10px;
-    --shadow:    0 2px 12px rgba(0,0,0,0.10);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--gray-100);
-    color: var(--black);
-    min-height: 100vh;
-  }
-  header {
-    background: var(--red);
-    color: var(--white);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
-  header p  { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; }
-  .screen { display: none; padding: 24px 16px; max-width: 480px; margin: 0 auto; }
-  .screen.active { display: block; }
-  .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .card h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
-  .card p  { font-size: 0.88rem; color: var(--gray-700); margin-bottom: 18px; line-height: 1.5; }
-  label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
-  input[type="text"], input[type="search"], select {
-    width: 100%; padding: 12px 14px;
-    border: 1.5px solid #DDD; border-radius: 8px;
-    font-size: 0.95rem; color: var(--black);
-    background: var(--white); outline: none;
-    transition: border-color 0.15s; margin-bottom: 14px;
-  }
-  input:focus, select:focus { border-color: var(--red); }
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 13px;
-    border: none; border-radius: 8px;
-    font-size: 0.95rem; font-weight: 700;
-    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn-red   { background: var(--red); color: var(--white); }
-  .btn-red:hover { background: var(--red-dark); }
-  .btn-outline { background: transparent; color: var(--red); border: 2px solid var(--red); margin-top: 10px; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .vehicle-card {
-    border: 2px solid #EEE; border-radius: 8px;
-    padding: 14px; cursor: pointer; margin-bottom: 10px;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .vehicle-card:hover, .vehicle-card.selected { border-color: var(--red); background: var(--red-light); }
-  .vehicle-card .plate { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em; }
-  .vehicle-card .meta  { font-size: 0.8rem; color: var(--gray-400); margin-top: 3px; }
-  .progress-bar { background: #EEE; border-radius: 99px; height: 6px; margin: 12px 0; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.3s; }
-  .progress-label { font-size: 0.8rem; color: var(--gray-400); text-align: right; }
-  .item-card {
-    background: var(--white); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 22px; margin-bottom: 12px;
-  }
-  .item-number {
-    display: inline-block; background: var(--red); color: white;
-    font-size: 0.7rem; font-weight: 800;
-    padding: 3px 9px; border-radius: 99px;
-    margin-bottom: 10px; letter-spacing: 0.05em;
-  }
-  .item-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
-  .item-cat  { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 18px; }
-  .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .choice-btn {
-    padding: 12px; border-radius: 8px; border: 2px solid #DDD;
-    font-size: 0.9rem; font-weight: 700;
-    cursor: pointer; text-align: center;
-    transition: all 0.15s; background: white;
-  }
-  .choice-btn.ok  { border-color: var(--green); color: var(--green); }
-  .choice-btn.ok:hover  { background: var(--green-bg); }
-  .choice-btn.nok { border-color: var(--red); color: var(--red); }
-  .choice-btn.nok:hover { background: var(--red-light); }
-  .photo-zone {
-    border: 2px dashed var(--red); border-radius: 8px;
-    padding: 20px; text-align: center;
-    margin: 14px 0; background: var(--red-light); cursor: pointer;
-  }
-  .photo-zone p { font-size: 0.85rem; color: var(--red-dark); margin-top: 8px; font-weight: 600; }
-  .photo-preview { width: 100%; max-height: 220px; object-fit: cover; border-radius: 8px; margin: 10px 0; display: none; }
-  #fileInput { display: none; }
-  .badge {
-    display: inline-block; font-size: 0.75rem; font-weight: 700;
-    padding: 3px 10px; border-radius: 99px;
-  }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-red   { background: var(--red-light); color: var(--red); }
-  .summary-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 0.88rem;
-  }
-  .summary-item:last-child { border-bottom: none; }
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--black); color: white;
-    padding: 11px 22px; border-radius: 99px;
-    font-size: 0.85rem; font-weight: 600;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s; z-index: 999; white-space: nowrap;
-  }
-  #toast.show { opacity: 1; }
-  .spinner {
-    width: 22px; height: 22px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top-color: white; border-radius: 50%;
-    animation: spin 0.7s linear infinite; display: inline-block;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .success-icon { font-size: 3rem; text-align: center; margin: 10px 0; }
-  .divider { border: none; border-top: 1px solid #EEE; margin: 16px 0; }
-  @media (max-width: 420px) {
-    header { padding: 14px 16px; }
-    .screen { padding: 16px 12px; }
-  }
-</style>
-</head>
-<body>
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-<header>
-  <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-    <rect width="38" height="38" rx="8" fill="white" fill-opacity="0.15"/>
-    <path d="M6 26L10 14h18l4 12H6z" fill="white" fill-opacity="0.9"/>
-    <circle cx="12" cy="28" r="3" fill="white"/>
-    <circle cx="26" cy="28" r="3" fill="white"/>
-    <rect x="10" y="18" width="18" height="6" fill="white" fill-opacity="0.4"/>
-  </svg>
-  <div>
-    <h1>Goulart Transportes</h1>
-    <p>Check-list de Frota</p>
-  </div>
-</header>
+const RESEND_API_KEY  = 're_ZBCBBwEs_AoecapAFTWiCwWAWvxHbtZJv';
+const FROM_EMAIL      = 'onboarding@resend.dev';
+const TO_EMAIL        = 'jackson@goularttransporte.com.br';
 
-<!-- TELA 1: LOGIN -->
-<div id="screen-login" class="screen active">
-  <div class="card">
-    <h2>Identificação</h2>
-    <p>Informe seu CPF ou matrícula para continuar.</p>
-    <label for="cpfInput">CPF ou Matrícula</label>
-    <input type="text" id="cpfInput" placeholder="Ex: 123.456.789-00 ou GT0042">
-    <button class="btn btn-red" onclick="doLogin()"><span>Continuar</span></button>
-  </div>
-</div>
-
-<!-- TELA 2: VEÍCULO -->
-<div id="screen-vehicle" class="screen">
-  <div style="margin-bottom:12px;">
-    <div style="font-size:0.82rem; color:var(--gray-400); margin-bottom:4px;">Motorista</div>
-    <div id="driverNameDisplay" style="font-size:1rem; font-weight:700;"></div>
-  </div>
-  <div class="card" style="padding:16px;">
-    <label for="vehicleSearch">Buscar veículo pela placa</label>
-    <input type="search" id="vehicleSearch" placeholder="Ex: ABC1234" oninput="filterVehicles()">
-    <div id="vehicleList"></div>
-    <button class="btn btn-red" id="btnStartChecklist" disabled onclick="goToChecklist()" style="margin-top:12px;">
-      Iniciar Check-list
-    </button>
-  </div>
-</div>
-
-<!-- TELA 3: CHECK-LIST -->
-<div id="screen-checklist" class="screen">
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-    <div>
-      <div style="font-size:0.78rem; color:var(--gray-400);">Veículo</div>
-      <div id="checkPlate" style="font-size:1.1rem; font-weight:800; letter-spacing:0.05em;"></div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:0.78rem; color:var(--gray-400);">Período</div>
-      <div id="checkPeriod" style="font-size:0.82rem; font-weight:600;"></div>
-    </div>
-  </div>
-
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-  <div class="progress-label" id="progressLabel">0 de 0 itens</div>
-
-  <div id="currentItem" style="margin-top:16px;"></div>
-
-  <div id="photoSection" style="display:none;">
-    <div class="item-card">
-      <p style="font-size:0.85rem; color:var(--red); font-weight:700; margin-bottom:10px;">
-        📸 Foto obrigatória para item não conforme
-      </p>
-      <img id="photoPreview" class="photo-preview">
-      <div class="photo-zone" onclick="document.getElementById('fileInput').click()">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-          <circle cx="12" cy="13" r="4"/>
-        </svg>
-        <p id="photoZoneLabel">Toque para tirar foto</p>
-      </div>
-      <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handlePhoto(this)">
-      <button class="btn btn-red" id="btnConfirmNok" onclick="confirmNok()" disabled>
-        Confirmar e avançar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- TELA 4: RESUMO -->
-<div id="screen-summary" class="screen">
-  <div class="success-icon">✅</div>
-  <div class="card">
-    <h2>Check-list concluído!</h2>
-    <p style="margin-bottom:12px;">Resumo da inspeção realizada.</p>
-    <hr class="divider">
-    <div id="summaryMeta" style="font-size:0.85rem; color:var(--gray-700); margin-bottom:12px;"></div>
-    <hr class="divider">
-    <div id="summaryList"></div>
-    <hr class="divider">
-    <div id="summaryStats" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;"></div>
-  </div>
-  <button class="btn btn-outline" onclick="restart()">Fazer novo check-list</button>
-</div>
-
-<div id="toast"></div>
-
-<script>
-const SUPABASE_URL    = 'https://sedoornofsugphyzezxm.supabase.co';
-const SUPABASE_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZG9vcm5vZnN1Z3BoeXplenhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDE4MTQsImV4cCI6MjA2NTM3NzgxNH0.bt2HREpeOkcSPhFYXN33S9ZxDlSt8sXofg2vDvlwVvw';
-const RESEND_ENDPOINT = 'https://sedoornofsugphyzezxm.supabase.co/functions/v1/send-notification';
-
-let state = {
-  driver: null, vehicle: null, items: [],
-  currentIndex: 0,
-  responses: [],   // { item, status: 'ok' | 'nok', photoUrl }
-  checklistId: null, selectedPhotoFile: null, period: null
-};
-
-// ── HELPERS ──────────────────────────────────────────────────
-async function supabase(path, options = {}) {
-  const method = options.method || 'GET';
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || 'return=representation',
-      ...options.headers
-    },
-    method,
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-  const text = await res.text();
-  if (!res.ok) { console.error('API error', res.status, path, text); return method === 'GET' ? [] : null; }
-  if (!text) return null;
-  try { return JSON.parse(text); } catch(e) { return []; }
-}
-
-async function uploadPhoto(file, checklistId, itemId) {
-  const ext  = file.name.split('.').pop();
-  const path = `${checklistId}/${itemId}-${Date.now()}.${ext}`;
-  const res  = await fetch(`${SUPABASE_URL}/storage/v1/object/checklist-photos/${path}`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
-    body: file
-  });
-  if (!res.ok) throw new Error('Erro ao enviar foto');
-  return `${SUPABASE_URL}/storage/v1/object/public/checklist-photos/${path}`;
-}
-
-function getPeriod() {
-  const now = new Date(), day = now.getDate(), y = now.getFullYear(), m = now.getMonth();
-  let start, end;
-  if (day <= 15) { start = new Date(y, m, 1);  end = new Date(y, m, 15); }
-  else           { start = new Date(y, m, 16); end = new Date(y, m + 1, 0); }
-  const fmt   = d => d.toISOString().split('T')[0];
-  const label = d => d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
-  return { start: fmt(start), end: fmt(end), label: `${label(start)} – ${label(end)}` };
-}
-
-function toast(msg, duration = 2500) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), duration);
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-// ── TELA 1: LOGIN ────────────────────────────────────────────
-async function doLogin() {
-  const val = document.getElementById('cpfInput').value.trim();
-  if (!val) { toast('Informe seu CPF ou matrícula'); return; }
-  try {
-    const rows = await supabase(`drivers?cpf_matricula=eq.${encodeURIComponent(val)}&active=eq.true`);
-    if (!rows || rows.length === 0) { toast('Motorista não encontrado. Fale com o supervisor.'); return; }
-    state.driver = rows[0];
-    document.getElementById('driverNameDisplay').textContent = state.driver.name;
-    await loadVehicles();
-    showScreen('screen-vehicle');
-  } catch(e) { toast('Erro ao buscar motorista. Tente novamente.'); console.error(e); }
-}
-
-// ── TELA 2: VEÍCULO ──────────────────────────────────────────
-let allVehicles = [];
-
-async function loadVehicles() {
-  const rows = await supabase('vehicles?active=eq.true&order=plate.asc');
-  allVehicles = rows || [];
-  renderVehicles(allVehicles);
-  if (state.driver.vehicle_id) {
-    const linked = allVehicles.find(v => v.id === state.driver.vehicle_id);
-    if (linked) selectVehicle(linked);
-  }
-}
-
-function renderVehicles(list) {
-  const el = document.getElementById('vehicleList');
-  if (!list.length) { el.innerHTML = '<p style="color:var(--gray-400);font-size:0.85rem;">Nenhum veículo encontrado</p>'; return; }
-  window._vehicleMap = {};
-  list.forEach(v => window._vehicleMap[v.id] = v);
-  el.innerHTML = list.map(v => `
-    <div class="vehicle-card ${state.vehicle?.id === v.id ? 'selected' : ''}"
-         id="vc-${v.id}" onclick="selectVehicleById('${v.id}')">
-      <div class="plate">${v.plate}</div>
-      <div class="meta">${v.type} • ${v.year || '—'}</div>
-    </div>
-  `).join('');
-}
-
-function filterVehicles() {
-  const q = document.getElementById('vehicleSearch').value.trim().toUpperCase();
-  renderVehicles(q ? allVehicles.filter(v => v.plate.includes(q)) : allVehicles);
-}
-
-function selectVehicleById(id) {
-  const v = window._vehicleMap && window._vehicleMap[id];
-  if (!v) return;
-  selectVehicle(v);
-}
-
-function selectVehicle(v) {
-  state.vehicle = v;
-  document.querySelectorAll('.vehicle-card').forEach(el => el.classList.remove('selected'));
-  const el = document.getElementById('vc-' + v.id);
-  if (el) el.classList.add('selected');
-  const btn = document.getElementById('btnStartChecklist');
-  btn.disabled = false;
-  btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-async function goToChecklist() {
-  if (!state.vehicle) return;
-  state.period       = getPeriod();
-  state.items        = await supabase('checklist_items?active=eq.true&order=order_index.asc') || [];
-  state.currentIndex = 0;
-  state.responses    = [];
-
-  try {
-    const rows = await supabase('checklists', {
-      method: 'POST',
-      body: {
-        vehicle_id:     state.vehicle.id,
-        vehicle_plate:  state.vehicle.plate,
-        driver_name:    state.driver.name,
-        inspector_name: 'Motorista',
-        overall_status: 'pending',
-        date:           new Date().toISOString()
+serve(async (req) => {
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'authorization, content-type',
       }
     });
-    state.checklistId = rows && rows[0] ? rows[0].id : null;
-  } catch(e) { console.warn('Checklist insert error:', e); }
+  }
 
-  document.getElementById('checkPlate').textContent  = state.vehicle.plate;
-  document.getElementById('checkPeriod').textContent = state.period.label;
-  showScreen('screen-checklist');
-  renderItem();
-}
+  try {
+    const { vehicle, driver, item, category, photoUrl, period } = await req.json();
 
-// ── TELA 3: CHECKLIST ────────────────────────────────────────
-function renderItem() {
-  const total = state.items.length;
-  const idx   = state.currentIndex;
-  const pct   = Math.round((idx / total) * 100);
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #C8102E; padding: 20px 24px; border-radius: 8px 8px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 18px;">⚠️ Não Conformidade Detectada</h1>
+          <p style="color: rgba(255,255,255,0.85); margin: 4px 0 0; font-size: 13px;">Check-list de Frota — Goulart Transportes</p>
+        </div>
 
-  document.getElementById('progressFill').style.width  = pct + '%';
-  document.getElementById('progressLabel').textContent = `${idx} de ${total} itens`;
-  document.getElementById('photoSection').style.display = 'none';
-  state.selectedPhotoFile = null;
+        <div style="background: #fff; border: 1px solid #eee; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr style="border-bottom: 1px solid #f0f0f0;">
+              <td style="padding: 10px 0; color: #666; width: 140px;">🚛 Veículo</td>
+              <td style="padding: 10px 0; font-weight: bold;">${vehicle}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f0f0f0;">
+              <td style="padding: 10px 0; color: #666;">👤 Motorista</td>
+              <td style="padding: 10px 0;">${driver}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f0f0f0;">
+              <td style="padding: 10px 0; color: #666;">📋 Item</td>
+              <td style="padding: 10px 0; font-weight: bold; color: #C8102E;">${item}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f0f0f0;">
+              <td style="padding: 10px 0; color: #666;">🏷️ Categoria</td>
+              <td style="padding: 10px 0;">${category}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 0; color: #666;">📅 Período</td>
+              <td style="padding: 10px 0;">${period}</td>
+            </tr>
+          </table>
 
-  if (idx >= total) { finishChecklist(); return; }
+          ${photoUrl ? `
+          <div style="margin-top: 20px;">
+            <p style="font-size: 13px; color: #666; margin-bottom: 8px;">📸 Foto registrada:</p>
+            <img src="${photoUrl}" alt="Foto da não conformidade"
+              style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;">
+          </div>
+          ` : ''}
 
-  const item = state.items[idx];
-  document.getElementById('currentItem').innerHTML = `
-    <div class="item-card">
-      <span class="item-number">ITEM ${idx + 1} / ${total}</span>
-      <div class="item-name">${item.name}</div>
-      <div class="item-cat">${item.category}</div>
-      <div class="choice-row">
-        <button class="choice-btn ok"  onclick="answerItem('ok')">✔ Conforme</button>
-        <button class="choice-btn nok" onclick="answerItem('nok')">✖ Não conforme</button>
+          <div style="margin-top: 24px; padding: 14px; background: #FEF3C7; border-radius: 8px; border-left: 4px solid #B45309;">
+            <p style="margin: 0; font-size: 13px; color: #92400E;">
+              <strong>Ação necessária:</strong> Verifique este item e tome as providências necessárias antes do próximo uso do veículo.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-  `;
-}
+    `;
 
-function answerItem(status) {
-  if (status === 'ok') {
-    saveResponse(state.items[state.currentIndex], 'ok', null);
-    state.currentIndex++;
-    renderItem();
-  } else {
-    // status 'nok' — exige foto antes de avançar
-    document.getElementById('photoSection').style.display = 'block';
-    document.getElementById('btnConfirmNok').disabled = true;
-    document.getElementById('photoPreview').style.display = 'none';
-    document.getElementById('photoZoneLabel').textContent = 'Toque para tirar foto';
-    window.scrollTo(0, document.body.scrollHeight);
-  }
-}
-
-function handlePhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  state.selectedPhotoFile = file;
-  const preview = document.getElementById('photoPreview');
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
-  document.getElementById('photoZoneLabel').textContent = '✔ Foto selecionada — pode trocar';
-  document.getElementById('btnConfirmNok').disabled = false;
-}
-
-async function confirmNok() {
-  const btn = document.getElementById('btnConfirmNok');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Enviando...';
-  try {
-    const item     = state.items[state.currentIndex];
-    const photoUrl = await uploadPhoto(state.selectedPhotoFile, state.checklistId, item.id);
-    saveResponse(item, 'nok', photoUrl);   // ← FIX: era 'pending', agora 'nok'
-    await sendNotification(item, photoUrl);
-    state.currentIndex++;
-    renderItem();
-  } catch(e) {
-    toast('Erro ao enviar foto. Tente novamente.');
-    btn.disabled = false;
-    btn.textContent = 'Confirmar e avançar';
-    console.error(e);
-  }
-}
-
-function saveResponse(item, status, photoUrl) {
-  state.responses.push({ item, status, photoUrl });
-  if (!item || !item.id) return;
-  const body = {
-    item_id:      item.id,
-    status,                           // 'ok' ou 'nok'
-    photos: photoUrl ? [photoUrl] : []
-  };
-  if (state.checklistId) body.checklist_id = state.checklistId;
-  supabase('checklist_responses', { method: 'POST', body }).catch(console.error);
-}
-
-async function sendNotification(item, photoUrl) {
-  try {
-    await fetch(RESEND_ENDPOINT, {
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        vehicle:  state.vehicle.plate,
-        driver:   state.driver.name,
-        item:     item.name,
-        category: item.category,
-        photoUrl,
-        period:   state.period.label
-      })
+        from: FROM_EMAIL,
+        to:   [TO_EMAIL],
+        subject: `⚠️ Não conformidade: ${item} — Veículo ${vehicle}`,
+        html,
+      }),
     });
-  } catch(e) { console.warn('Notificação não enviada:', e); }
-}
 
-// ── TELA 4: RESUMO ───────────────────────────────────────────
-async function finishChecklist() {
-  if (state.checklistId) {
-    // FIX: overall_status = 'nok' se há não conformidade, senão 'ok'
-    const hasNok = state.responses.some(r => r.status === 'nok');
-    await supabase(`checklists?id=eq.${state.checklistId}`, {
-      method: 'PATCH',
-      body: { overall_status: hasNok ? 'nok' : 'ok' }
-    }).catch(console.error);
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error('Resend error:', data);
+      return new Response(JSON.stringify({ error: data }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: true, id: data.id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+
+  } catch (err) {
+    console.error('Function error:', err);
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
   }
-
-  const conformes    = state.responses.filter(r => r.status === 'ok').length;
-  const naoConformes = state.responses.filter(r => r.status === 'nok').length;
-
-  document.getElementById('summaryMeta').innerHTML = `
-    <strong>${state.vehicle.plate}</strong> • ${state.driver.name}<br>
-    Período: ${state.period.label}
-  `;
-  document.getElementById('summaryStats').innerHTML = `
-    <span class="badge badge-green">✔ ${conformes} conformes</span>
-    ${naoConformes > 0 ? `<span class="badge badge-red">✖ ${naoConformes} não conformes</span>` : ''}
-  `;
-  document.getElementById('summaryList').innerHTML = state.responses.map(r => `
-    <div class="summary-item">
-      <span>${r.item ? r.item.name : '—'}</span>
-      <span class="badge ${r.status === 'ok' ? 'badge-green' : 'badge-red'}">
-        ${r.status === 'ok' ? '✔ OK' : '✖ N/C'}
-      </span>
-    </div>
-  `).join('');
-
-  showScreen('screen-summary');
-}
-
-function restart() {
-  state = { driver: null, vehicle: null, items: [], currentIndex: 0, responses: [], checklistId: null, selectedPhotoFile: null, period: null };
-  document.getElementById('cpfInput').value = '';
-  showScreen('screen-login');
-}
-
-document.getElementById('cpfInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-</script>
-</body>
-</html>
+});
