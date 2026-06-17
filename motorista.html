@@ -597,7 +597,7 @@ function saveResponse(item, status, photoUrl) {
       checklist_id: state.checklistId,
       item_id:      item.id,
       status,
-      photo_url:    photoUrl
+      photos:       photoUrl ? [photoUrl] : []
     }
   }).catch(console.error);
 }
