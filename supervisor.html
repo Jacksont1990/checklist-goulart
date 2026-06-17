@@ -536,7 +536,7 @@ function renderDashboard() {
     return d >= period.start && d <= period.end;
   });
 
-  const doneIds  = new Set(periodChecklists.filter(c => c.overall_status === 'concluido').map(c => c.vehicle_id));
+  const doneIds  = new Set(periodChecklists.filter(c => c.overall_status === 'ok').map(c => c.vehicle_id));
   const nokCount = DATA.responses.filter(r => {
     const cl = DATA.checklists.find(c => c.id === r.checklist_id);
     if (!cl || !cl.date) return false;
@@ -550,7 +550,7 @@ function renderDashboard() {
   document.getElementById('statNok').textContent     = nokCount;
 
   dashRows = DATA.vehicles.filter(v => v.active).map(v => {
-    const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.overall_status === 'concluido');
+    const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.overall_status === 'ok');
     const nokItems = cl ? DATA.responses.filter(r => r.checklist_id === cl.id && r.status === 'nao_conforme').length : 0;
     const driver = DATA.drivers.find(d => d.vehicle_id === v.id);
     return { v, cl, nokItems, driverName: cl?.driver_name || driver?.name || '—' };
@@ -671,7 +671,7 @@ function renderHistory() {
       <td>${c.driver_name}</td>
       <td style="font-size:0.8rem;">${period.start} a ${period.end}</td>
       <td style="font-size:0.8rem;">${fmtDate(c.date)}</td>
-      <td><span class="badge ${c.overall_status === 'concluido' ? 'badge-green' : 'badge-amber'}">${c.overall_status === 'concluido' ? 'Concluído' : 'Em andamento'}</span></td>
+      <td><span class="badge ${c.overall_status === 'ok' ? 'badge-green' : 'badge-amber'}">${c.overall_status === 'ok' ? 'Concluído' : 'Em andamento'}</span></td>
       <td>${nok > 0 ? `<span class="badge badge-red">${nok}</span>` : '<span class="badge badge-gray">0</span>'}</td>
       <td><button class="btn btn-outline btn-sm" onclick="showDetail('${c.id}')">Ver</button></td>
     </tr>`;
@@ -696,7 +696,7 @@ function showDetail(clId) {
           return `<tr>
             <td>${item?.name || r.item_id}</td>
             <td><span class="badge ${r.status === 'conforme' ? 'badge-green' : 'badge-red'}">${r.status === 'conforme' ? '✔ OK' : '✖ N/C'}</span></td>
-            <td>${r.photo_url ? `<img class="photo-thumb" src="${r.photo_url}" onclick="window.open('${r.photo_url}','_blank')">` : '—'}</td>
+            <td>${r.photos && r.photos[0] ? `<img class="photo-thumb" src="${r.photos[0]}" onclick="window.open('${r.photos[0]}','_blank')">` : '—'}</td>
           </tr>`;
         }).join('')}
       </tbody>
