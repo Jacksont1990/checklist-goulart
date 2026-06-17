@@ -494,7 +494,8 @@ async function goToChecklist() {
         vehicle_id:      state.vehicle.id,
         vehicle_plate:   state.vehicle.plate,
         driver_name:     state.driver.name,
-        overall_status:  'em_andamento',
+        inspector_name:  'Motorista',
+        overall_status:  'pending',
         date:            new Date().toISOString()
       }
     });
@@ -628,7 +629,7 @@ async function finishChecklist() {
   if (state.checklistId) {
     await supabase(`checklists?id=eq.${state.checklistId}`, {
       method: 'PATCH',
-      body: { overall_status: 'concluido' }
+      body: { overall_status: 'ok' }
     }).catch(console.error);
   }
 
