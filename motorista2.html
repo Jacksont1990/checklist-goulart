@@ -29,8 +29,6 @@
     color: var(--black);
     min-height: 100vh;
   }
-
-  /* HEADER */
   header {
     background: var(--red);
     color: var(--white);
@@ -40,15 +38,10 @@
     gap: 14px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  header img { width: 38px; height: 38px; }
   header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
   header p  { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; }
-
-  /* SCREENS */
   .screen { display: none; padding: 24px 16px; max-width: 480px; margin: 0 auto; }
   .screen.active { display: block; }
-
-  /* CARD */
   .card {
     background: var(--white);
     border-radius: var(--radius);
@@ -58,24 +51,15 @@
   }
   .card h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
   .card p  { font-size: 0.88rem; color: var(--gray-700); margin-bottom: 18px; line-height: 1.5; }
-
-  /* INPUTS */
   label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
   input[type="text"], input[type="search"], select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #DDD;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    color: var(--black);
-    background: var(--white);
-    outline: none;
-    transition: border-color 0.15s;
-    margin-bottom: 14px;
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid #DDD; border-radius: 8px;
+    font-size: 0.95rem; color: var(--black);
+    background: var(--white); outline: none;
+    transition: border-color 0.15s; margin-bottom: 14px;
   }
   input:focus, select:focus { border-color: var(--red); }
-
-  /* BUTTONS */
   .btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 13px;
@@ -87,122 +71,78 @@
   .btn-red   { background: var(--red); color: var(--white); }
   .btn-red:hover { background: var(--red-dark); }
   .btn-outline { background: transparent; color: var(--red); border: 2px solid var(--red); margin-top: 10px; }
-  .btn-green { background: var(--green); color: var(--white); }
-  .btn-gray  { background: var(--gray-100); color: var(--gray-700); border: 1.5px solid #DDD; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* VEHICLE CARD */
   .vehicle-card {
-    border: 2px solid #EEE;
-    border-radius: 8px;
-    padding: 14px;
-    cursor: pointer;
-    margin-bottom: 10px;
+    border: 2px solid #EEE; border-radius: 8px;
+    padding: 14px; cursor: pointer; margin-bottom: 10px;
     transition: border-color 0.15s, background 0.15s;
   }
   .vehicle-card:hover, .vehicle-card.selected { border-color: var(--red); background: var(--red-light); }
   .vehicle-card .plate { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em; }
   .vehicle-card .meta  { font-size: 0.8rem; color: var(--gray-400); margin-top: 3px; }
-
-  /* PROGRESS */
   .progress-bar { background: #EEE; border-radius: 99px; height: 6px; margin: 12px 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.3s; }
   .progress-label { font-size: 0.8rem; color: var(--gray-400); text-align: right; }
-
-  /* CHECK ITEM */
   .item-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 22px;
-    margin-bottom: 12px;
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 22px; margin-bottom: 12px;
   }
   .item-number {
-    display: inline-block;
-    background: var(--red);
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 800;
-    padding: 3px 9px;
-    border-radius: 99px;
-    margin-bottom: 10px;
-    letter-spacing: 0.05em;
+    display: inline-block; background: var(--red); color: white;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px; border-radius: 99px;
+    margin-bottom: 10px; letter-spacing: 0.05em;
   }
   .item-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
   .item-cat  { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 18px; }
   .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .choice-btn {
-    padding: 12px;
-    border-radius: 8px;
-    border: 2px solid #DDD;
+    padding: 12px; border-radius: 8px; border: 2px solid #DDD;
     font-size: 0.9rem; font-weight: 700;
     cursor: pointer; text-align: center;
-    transition: all 0.15s;
-    background: white;
+    transition: all 0.15s; background: white;
   }
-  .choice-btn.ok    { border-color: var(--green); color: var(--green); }
-  .choice-btn.ok:hover, .choice-btn.ok.selected    { background: var(--green-bg); }
-  .choice-btn.nok   { border-color: var(--red); color: var(--red); }
-  .choice-btn.nok:hover, .choice-btn.nok.selected  { background: var(--red-light); }
-
-  /* PHOTO CAPTURE */
+  .choice-btn.ok  { border-color: var(--green); color: var(--green); }
+  .choice-btn.ok:hover  { background: var(--green-bg); }
+  .choice-btn.nok { border-color: var(--red); color: var(--red); }
+  .choice-btn.nok:hover { background: var(--red-light); }
   .photo-zone {
-    border: 2px dashed var(--red);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    margin: 14px 0;
-    background: var(--red-light);
-    cursor: pointer;
+    border: 2px dashed var(--red); border-radius: 8px;
+    padding: 20px; text-align: center;
+    margin: 14px 0; background: var(--red-light); cursor: pointer;
   }
-  .photo-zone svg { opacity: 0.5; }
   .photo-zone p { font-size: 0.85rem; color: var(--red-dark); margin-top: 8px; font-weight: 600; }
   .photo-preview { width: 100%; max-height: 220px; object-fit: cover; border-radius: 8px; margin: 10px 0; display: none; }
   #fileInput { display: none; }
-
-  /* BADGE */
   .badge {
-    display: inline-block;
-    font-size: 0.75rem; font-weight: 700;
+    display: inline-block; font-size: 0.75rem; font-weight: 700;
     padding: 3px 10px; border-radius: 99px;
   }
   .badge-green { background: var(--green-bg); color: var(--green); }
   .badge-red   { background: var(--red-light); color: var(--red); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber); }
-
-  /* SUMMARY LIST */
   .summary-item {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 0.88rem;
   }
   .summary-item:last-child { border-bottom: none; }
-
-  /* TOAST */
   #toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: var(--black); color: white;
     padding: 11px 22px; border-radius: 99px;
     font-size: 0.85rem; font-weight: 600;
     opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
-    z-index: 999; white-space: nowrap;
+    transition: opacity 0.3s; z-index: 999; white-space: nowrap;
   }
   #toast.show { opacity: 1; }
-
-  /* SPINNER */
   .spinner {
     width: 22px; height: 22px;
     border: 3px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: inline-block;
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: inline-block;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   .success-icon { font-size: 3rem; text-align: center; margin: 10px 0; }
   .divider { border: none; border-top: 1px solid #EEE; margin: 16px 0; }
-
   @media (max-width: 420px) {
     header { padding: 14px 16px; }
     .screen { padding: 16px 12px; }
@@ -225,20 +165,18 @@
   </div>
 </header>
 
-<!-- TELA 1: LOGIN MOTORISTA -->
+<!-- TELA 1: LOGIN -->
 <div id="screen-login" class="screen active">
   <div class="card">
     <h2>Identificação</h2>
     <p>Informe seu CPF ou matrícula para continuar.</p>
     <label for="cpfInput">CPF ou Matrícula</label>
     <input type="text" id="cpfInput" placeholder="Ex: 123.456.789-00 ou GT0042">
-    <button class="btn btn-red" onclick="doLogin()">
-      <span>Continuar</span>
-    </button>
+    <button class="btn btn-red" onclick="doLogin()"><span>Continuar</span></button>
   </div>
 </div>
 
-<!-- TELA 2: SELECIONAR VEÍCULO -->
+<!-- TELA 2: VEÍCULO -->
 <div id="screen-vehicle" class="screen">
   <div style="margin-bottom:12px;">
     <div style="font-size:0.82rem; color:var(--gray-400); margin-bottom:4px;">Motorista</div>
@@ -254,7 +192,7 @@
   </div>
 </div>
 
-<!-- TELA 3: CHECK-LIST (item a item) -->
+<!-- TELA 3: CHECK-LIST -->
 <div id="screen-checklist" class="screen">
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
     <div>
@@ -272,7 +210,6 @@
 
   <div id="currentItem" style="margin-top:16px;"></div>
 
-  <!-- Zona de foto (aparece só para não conformes) -->
   <div id="photoSection" style="display:none;">
     <div class="item-card">
       <p style="font-size:0.85rem; color:var(--red); font-weight:700; margin-bottom:10px;">
@@ -294,7 +231,7 @@
   </div>
 </div>
 
-<!-- TELA 4: RESUMO FINAL -->
+<!-- TELA 4: RESUMO -->
 <div id="screen-summary" class="screen">
   <div class="success-icon">✅</div>
   <div class="card">
@@ -313,30 +250,18 @@
 <div id="toast"></div>
 
 <script>
-// ============================================================
-// CONFIGURAÇÃO — substitua pelos seus dados do Supabase
-// ============================================================
-const SUPABASE_URL  = 'https://sedoornofsugphyzezxm.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZG9vcm5vZnN1Z3BoeXplenhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDE4MTQsImV4cCI6MjA2NTM3NzgxNH0.bt2HREpeOkcSPhFYXN33S9ZxDlSt8sXofg2vDvlwVvw'; // anon/public key
+const SUPABASE_URL    = 'https://sedoornofsugphyzezxm.supabase.co';
+const SUPABASE_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZG9vcm5vZnN1Z3BoeXplenhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDE4MTQsImV4cCI6MjA2NTM3NzgxNH0.bt2HREpeOkcSPhFYXN33S9ZxDlSt8sXofg2vDvlwVvw';
 const RESEND_ENDPOINT = 'https://sedoornofsugphyzezxm.supabase.co/functions/v1/send-notification';
 
-// ============================================================
-// ESTADO GLOBAL
-// ============================================================
 let state = {
-  driver: null,        // { id, name, cpf_matricula, vehicle_id }
-  vehicle: null,       // { id, plate, type, year }
-  items: [],           // todos os itens do check-list
+  driver: null, vehicle: null, items: [],
   currentIndex: 0,
-  responses: [],       // { item, status, photoFile, photoUrl }
-  checklistId: null,
-  selectedPhotoFile: null,
-  period: null
+  responses: [],   // { item, status: 'ok' | 'nok', photoUrl }
+  checklistId: null, selectedPhotoFile: null, period: null
 };
 
-// ============================================================
-// HELPERS
-// ============================================================
+// ── HELPERS ──────────────────────────────────────────────────
 async function supabase(path, options = {}) {
   const method = options.method || 'GET';
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -361,11 +286,7 @@ async function uploadPhoto(file, checklistId, itemId) {
   const path = `${checklistId}/${itemId}-${Date.now()}.${ext}`;
   const res  = await fetch(`${SUPABASE_URL}/storage/v1/object/checklist-photos/${path}`, {
     method: 'POST',
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': file.type
-    },
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
     body: file
   });
   if (!res.ok) throw new Error('Erro ao enviar foto');
@@ -373,27 +294,18 @@ async function uploadPhoto(file, checklistId, itemId) {
 }
 
 function getPeriod() {
-  const now  = new Date();
-  const day  = now.getDate();
-  const y    = now.getFullYear();
-  const m    = now.getMonth();
+  const now = new Date(), day = now.getDate(), y = now.getFullYear(), m = now.getMonth();
   let start, end;
-  if (day <= 15) {
-    start = new Date(y, m, 1);
-    end   = new Date(y, m, 15);
-  } else {
-    start = new Date(y, m, 16);
-    end   = new Date(y, m + 1, 0);
-  }
-  const fmt = d => d.toISOString().split('T')[0];
+  if (day <= 15) { start = new Date(y, m, 1);  end = new Date(y, m, 15); }
+  else           { start = new Date(y, m, 16); end = new Date(y, m + 1, 0); }
+  const fmt   = d => d.toISOString().split('T')[0];
   const label = d => d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
   return { start: fmt(start), end: fmt(end), label: `${label(start)} – ${label(end)}` };
 }
 
 function toast(msg, duration = 2500) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), duration);
 }
 
@@ -403,39 +315,27 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-// ============================================================
-// TELA 1 — LOGIN
-// ============================================================
+// ── TELA 1: LOGIN ────────────────────────────────────────────
 async function doLogin() {
   const val = document.getElementById('cpfInput').value.trim();
   if (!val) { toast('Informe seu CPF ou matrícula'); return; }
-
   try {
     const rows = await supabase(`drivers?cpf_matricula=eq.${encodeURIComponent(val)}&active=eq.true`);
-    if (!rows || rows.length === 0) {
-      toast('Motorista não encontrado. Fale com o supervisor.'); return;
-    }
+    if (!rows || rows.length === 0) { toast('Motorista não encontrado. Fale com o supervisor.'); return; }
     state.driver = rows[0];
     document.getElementById('driverNameDisplay').textContent = state.driver.name;
     await loadVehicles();
     showScreen('screen-vehicle');
-  } catch(e) {
-    toast('Erro ao buscar motorista. Tente novamente.');
-    console.error(e);
-  }
+  } catch(e) { toast('Erro ao buscar motorista. Tente novamente.'); console.error(e); }
 }
 
-// ============================================================
-// TELA 2 — SELEÇÃO DE VEÍCULO
-// ============================================================
+// ── TELA 2: VEÍCULO ──────────────────────────────────────────
 let allVehicles = [];
 
 async function loadVehicles() {
   const rows = await supabase('vehicles?active=eq.true&order=plate.asc');
   allVehicles = rows || [];
   renderVehicles(allVehicles);
-
-  // Se o motorista tem veículo vinculado, pré-seleciona
   if (state.driver.vehicle_id) {
     const linked = allVehicles.find(v => v.id === state.driver.vehicle_id);
     if (linked) selectVehicle(linked);
@@ -445,7 +345,6 @@ async function loadVehicles() {
 function renderVehicles(list) {
   const el = document.getElementById('vehicleList');
   if (!list.length) { el.innerHTML = '<p style="color:var(--gray-400);font-size:0.85rem;">Nenhum veículo encontrado</p>'; return; }
-  // store vehicles globally for click handler
   window._vehicleMap = {};
   list.forEach(v => window._vehicleMap[v.id] = v);
   el.innerHTML = list.map(v => `
@@ -480,39 +379,33 @@ function selectVehicle(v) {
 
 async function goToChecklist() {
   if (!state.vehicle) return;
-  state.period    = getPeriod();
-  state.items     = await supabase('checklist_items?active=eq.true&order=order_index.asc') || [];
+  state.period       = getPeriod();
+  state.items        = await supabase('checklist_items?active=eq.true&order=order_index.asc') || [];
   state.currentIndex = 0;
   state.responses    = [];
 
-  // Criar registro de checklist no banco
-  let state_checklistId = null;
   try {
     const rows = await supabase('checklists', {
       method: 'POST',
       body: {
-        vehicle_id:      state.vehicle.id,
-        vehicle_plate:   state.vehicle.plate,
-        driver_name:     state.driver.name,
-        inspector_name:  'Motorista',
-        overall_status:  'pending',
-        date:            new Date().toISOString()
+        vehicle_id:     state.vehicle.id,
+        vehicle_plate:  state.vehicle.plate,
+        driver_name:    state.driver.name,
+        inspector_name: 'Motorista',
+        overall_status: 'pending',
+        date:           new Date().toISOString()
       }
     });
-    if (rows && rows[0]) state_checklistId = rows[0].id;
+    state.checklistId = rows && rows[0] ? rows[0].id : null;
   } catch(e) { console.warn('Checklist insert error:', e); }
-  state.checklistId = state_checklistId;
 
   document.getElementById('checkPlate').textContent  = state.vehicle.plate;
   document.getElementById('checkPeriod').textContent = state.period.label;
-
   showScreen('screen-checklist');
   renderItem();
 }
 
-// ============================================================
-// TELA 3 — CHECK-LIST ITEM A ITEM
-// ============================================================
+// ── TELA 3: CHECKLIST ────────────────────────────────────────
 function renderItem() {
   const total = state.items.length;
   const idx   = state.currentIndex;
@@ -532,8 +425,8 @@ function renderItem() {
       <div class="item-name">${item.name}</div>
       <div class="item-cat">${item.category}</div>
       <div class="choice-row">
-        <button class="choice-btn ok" onclick="answerItem('ok')">✔ Conforme</button>
-        <button class="choice-btn nok" onclick="answerItem('pending')">✖ Não conforme</button>
+        <button class="choice-btn ok"  onclick="answerItem('ok')">✔ Conforme</button>
+        <button class="choice-btn nok" onclick="answerItem('nok')">✖ Não conforme</button>
       </div>
     </div>
   `;
@@ -545,7 +438,7 @@ function answerItem(status) {
     state.currentIndex++;
     renderItem();
   } else {
-    // Exige foto antes de avançar
+    // status 'nok' — exige foto antes de avançar
     document.getElementById('photoSection').style.display = 'block';
     document.getElementById('btnConfirmNok').disabled = true;
     document.getElementById('photoPreview').style.display = 'none';
@@ -569,15 +462,11 @@ async function confirmNok() {
   const btn = document.getElementById('btnConfirmNok');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Enviando...';
-
   try {
     const item     = state.items[state.currentIndex];
     const photoUrl = await uploadPhoto(state.selectedPhotoFile, state.checklistId, item.id);
-    saveResponse(item, 'pending', photoUrl);
-
-    // Notificar por e-mail
+    saveResponse(item, 'nok', photoUrl);   // ← FIX: era 'pending', agora 'nok'
     await sendNotification(item, photoUrl);
-
     state.currentIndex++;
     renderItem();
   } catch(e) {
@@ -590,18 +479,14 @@ async function confirmNok() {
 
 function saveResponse(item, status, photoUrl) {
   state.responses.push({ item, status, photoUrl });
-  // Salva no banco (fire-and-forget)
   if (!item || !item.id) return;
   const body = {
-    item_id: item.id,
-    status,
-    photos:  photoUrl ? [photoUrl] : []
+    item_id:      item.id,
+    status,                           // 'ok' ou 'nok'
+    photos: photoUrl ? [photoUrl] : []
   };
   if (state.checklistId) body.checklist_id = state.checklistId;
-  supabase('checklist_responses', {
-    method: 'POST',
-    body
-  }).catch(console.error);
+  supabase('checklist_responses', { method: 'POST', body }).catch(console.error);
 }
 
 async function sendNotification(item, photoUrl) {
@@ -618,36 +503,31 @@ async function sendNotification(item, photoUrl) {
         period:   state.period.label
       })
     });
-  } catch(e) {
-    console.warn('Notificação não enviada:', e);
-  }
+  } catch(e) { console.warn('Notificação não enviada:', e); }
 }
 
-// ============================================================
-// TELA 4 — RESUMO FINAL
-// ============================================================
+// ── TELA 4: RESUMO ───────────────────────────────────────────
 async function finishChecklist() {
-  // Atualiza status no banco
   if (state.checklistId) {
+    // FIX: overall_status = 'nok' se há não conformidade, senão 'ok'
+    const hasNok = state.responses.some(r => r.status === 'nok');
     await supabase(`checklists?id=eq.${state.checklistId}`, {
       method: 'PATCH',
-      body: { overall_status: 'ok' }
+      body: { overall_status: hasNok ? 'nok' : 'ok' }
     }).catch(console.error);
   }
 
-  const conformes   = state.responses.filter(r => r.status === 'ok').length;
-  const naoConformes = state.responses.filter(r => r.status === 'pending').length;
+  const conformes    = state.responses.filter(r => r.status === 'ok').length;
+  const naoConformes = state.responses.filter(r => r.status === 'nok').length;
 
   document.getElementById('summaryMeta').innerHTML = `
     <strong>${state.vehicle.plate}</strong> • ${state.driver.name}<br>
     Período: ${state.period.label}
   `;
-
   document.getElementById('summaryStats').innerHTML = `
     <span class="badge badge-green">✔ ${conformes} conformes</span>
-    <span class="badge badge-red">✖ ${naoConformes} não conformes</span>
+    ${naoConformes > 0 ? `<span class="badge badge-red">✖ ${naoConformes} não conformes</span>` : ''}
   `;
-
   document.getElementById('summaryList').innerHTML = state.responses.map(r => `
     <div class="summary-item">
       <span>${r.item ? r.item.name : '—'}</span>
@@ -666,7 +546,6 @@ function restart() {
   showScreen('screen-login');
 }
 
-// Enter no login
 document.getElementById('cpfInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 </body>
