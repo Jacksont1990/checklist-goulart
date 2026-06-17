@@ -493,7 +493,7 @@ async function loadAll() {
       api('vehicles?select=*'),
       api('drivers?select=*'),
       api('checklist_items?select=*'),
-      api('checklists?select=*&order=started_at.desc'),
+      api('checklists?select=*&order=date.desc'),
       api('checklist_responses?select=*'),
       api('notification_emails?select=*')
     ]);
@@ -530,14 +530,18 @@ function setDashPeriod(type, btn) {
 
 function renderDashboard() {
   const period = getPeriod(dashPeriodType);
-  const periodChecklists = DATA.checklists.filter(c =>
-    c.period_start === period.start && c.period_end === period.end
-  );
+  const periodChecklists = DATA.checklists.filter(c => {
+    if (!c.date) return false;
+    const d = c.date.split('T')[0];
+    return d >= period.start && d <= period.end;
+  });
 
-  const doneIds  = new Set(periodChecklists.filter(c => c.status === 'concluido').map(c => c.vehicle_id));
+  const doneIds  = new Set(periodChecklists.filter(c => c.overall_status === 'concluido').map(c => c.vehicle_id));
   const nokCount = DATA.responses.filter(r => {
     const cl = DATA.checklists.find(c => c.id === r.checklist_id);
-    return r.status === 'nao_conforme' && cl && cl.period_start === period.start;
+    if (!cl || !cl.date) return false;
+    const d = cl.date.split('T')[0];
+    return r.status === 'nao_conforme' && d >= period.start && d <= period.end;
   }).length;
 
   document.getElementById('statTotal').textContent   = DATA.vehicles.filter(v => v.active).length;
@@ -546,7 +550,7 @@ function renderDashboard() {
   document.getElementById('statNok').textContent     = nokCount;
 
   dashRows = DATA.vehicles.filter(v => v.active).map(v => {
-    const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.status === 'concluido');
+    const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.overall_status === 'concluido');
     const nokItems = cl ? DATA.responses.filter(r => r.checklist_id === cl.id && r.status === 'nao_conforme').length : 0;
     const driver = DATA.drivers.find(d => d.vehicle_id === v.id);
     return { v, cl, nokItems, driverName: cl?.driver_name || driver?.name || '—' };
@@ -665,9 +669,9 @@ function renderHistory() {
     return `<tr>
       <td><strong>${v?.plate || '—'}</strong></td>
       <td>${c.driver_name}</td>
-      <td style="font-size:0.8rem;">${c.period_start} a ${c.period_end}</td>
-      <td style="font-size:0.8rem;">${fmtDate(c.started_at)}</td>
-      <td><span class="badge ${c.status === 'concluido' ? 'badge-green' : 'badge-amber'}">${c.status === 'concluido' ? 'Concluído' : 'Em andamento'}</span></td>
+      <td style="font-size:0.8rem;">${period.start} a ${period.end}</td>
+      <td style="font-size:0.8rem;">${fmtDate(c.date)}</td>
+      <td><span class="badge ${c.overall_status === 'concluido' ? 'badge-green' : 'badge-amber'}">${c.overall_status === 'concluido' ? 'Concluído' : 'Em andamento'}</span></td>
       <td>${nok > 0 ? `<span class="badge badge-red">${nok}</span>` : '<span class="badge badge-gray">0</span>'}</td>
       <td><button class="btn btn-outline btn-sm" onclick="showDetail('${c.id}')">Ver</button></td>
     </tr>`;
@@ -682,7 +686,7 @@ function showDetail(clId) {
   document.getElementById('detailBody').innerHTML = `
     <p style="font-size:0.85rem;color:var(--gray-700);margin-bottom:14px;">
       Motorista: <strong>${cl.driver_name}</strong> &nbsp;•&nbsp;
-      ${fmtDate(cl.started_at)}
+      ${fmtDate(cl.date)}
     </p>
     <table style="width:100%;font-size:0.85rem;">
       <thead><tr><th>Item</th><th>Status</th><th>Foto</th></tr></thead>
