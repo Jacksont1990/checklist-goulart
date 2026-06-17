@@ -532,8 +532,8 @@ function renderItem() {
       <div class="item-name">${item.name}</div>
       <div class="item-cat">${item.category}</div>
       <div class="choice-row">
-        <button class="choice-btn ok" onclick="answerItem('conforme')">✔ Conforme</button>
-        <button class="choice-btn nok" onclick="answerItem('nao_conforme')">✖ Não conforme</button>
+        <button class="choice-btn ok" onclick="answerItem('ok')">✔ Conforme</button>
+        <button class="choice-btn nok" onclick="answerItem('pending')">✖ Não conforme</button>
       </div>
     </div>
   `;
@@ -650,7 +650,7 @@ async function finishChecklist() {
 
   document.getElementById('summaryList').innerHTML = state.responses.map(r => `
     <div class="summary-item">
-      <span>${r.item.name}</span>
+      <span>${r.item ? r.item.name : '—'}</span>
       <span class="badge ${r.status === 'ok' ? 'badge-green' : 'badge-red'}">
         ${r.status === 'ok' ? '✔ OK' : '✖ N/C'}
       </span>
