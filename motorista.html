@@ -541,7 +541,7 @@ function renderItem() {
 
 function answerItem(status) {
   if (status === 'conforme') {
-    saveResponse(state.items[state.currentIndex], 'conforme', null);
+    saveResponse(state.items[state.currentIndex], 'ok', null);
     state.currentIndex++;
     renderItem();
   } else {
@@ -573,7 +573,7 @@ async function confirmNok() {
   try {
     const item     = state.items[state.currentIndex];
     const photoUrl = await uploadPhoto(state.selectedPhotoFile, state.checklistId, item.id);
-    saveResponse(item, 'nao_conforme', photoUrl);
+    saveResponse(item, 'pending', photoUrl);
 
     // Notificar por e-mail
     await sendNotification(item, photoUrl);
@@ -591,14 +591,16 @@ async function confirmNok() {
 function saveResponse(item, status, photoUrl) {
   state.responses.push({ item, status, photoUrl });
   // Salva no banco (fire-and-forget)
+  if (!item || !item.id) return;
+  const body = {
+    item_id: item.id,
+    status,
+    photos:  photoUrl ? [photoUrl] : []
+  };
+  if (state.checklistId) body.checklist_id = state.checklistId;
   supabase('checklist_responses', {
     method: 'POST',
-    body: {
-      checklist_id: state.checklistId,
-      item_id:      item.id,
-      status,
-      photos:       photoUrl ? [photoUrl] : []
-    }
+    body
   }).catch(console.error);
 }
 
@@ -633,8 +635,8 @@ async function finishChecklist() {
     }).catch(console.error);
   }
 
-  const conformes   = state.responses.filter(r => r.status === 'conforme').length;
-  const naoConformes = state.responses.filter(r => r.status === 'nao_conforme').length;
+  const conformes   = state.responses.filter(r => r.status === 'ok').length;
+  const naoConformes = state.responses.filter(r => r.status === 'pending').length;
 
   document.getElementById('summaryMeta').innerHTML = `
     <strong>${state.vehicle.plate}</strong> • ${state.driver.name}<br>
@@ -649,8 +651,8 @@ async function finishChecklist() {
   document.getElementById('summaryList').innerHTML = state.responses.map(r => `
     <div class="summary-item">
       <span>${r.item.name}</span>
-      <span class="badge ${r.status === 'conforme' ? 'badge-green' : 'badge-red'}">
-        ${r.status === 'conforme' ? '✔ OK' : '✖ N/C'}
+      <span class="badge ${r.status === 'ok' ? 'badge-green' : 'badge-red'}">
+        ${r.status === 'ok' ? '✔ OK' : '✖ N/C'}
       </span>
     </div>
   `).join('');
