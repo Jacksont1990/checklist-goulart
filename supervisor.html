@@ -541,7 +541,7 @@ function renderDashboard() {
     const cl = DATA.checklists.find(c => c.id === r.checklist_id);
     if (!cl || !cl.date) return false;
     const d = cl.date.split('T')[0];
-    return r.status === 'nao_conforme' && d >= period.start && d <= period.end;
+    return r.status === 'pending' && d >= period.start && d <= period.end;
   }).length;
 
   document.getElementById('statTotal').textContent   = DATA.vehicles.filter(v => v.active).length;
@@ -551,7 +551,7 @@ function renderDashboard() {
 
   dashRows = DATA.vehicles.filter(v => v.active).map(v => {
     const cl = periodChecklists.find(c => c.vehicle_id === v.id && c.overall_status === 'ok');
-    const nokItems = cl ? DATA.responses.filter(r => r.checklist_id === cl.id && r.status === 'nao_conforme').length : 0;
+    const nokItems = cl ? DATA.responses.filter(r => r.checklist_id === cl.id && r.status === 'pending').length : 0;
     const driver = DATA.drivers.find(d => d.vehicle_id === v.id);
     return { v, cl, nokItems, driverName: cl?.driver_name || driver?.name || '—' };
   });
@@ -665,7 +665,7 @@ async function deleteItem(id, name) {
 function renderHistory() {
   document.getElementById('histTable').innerHTML = DATA.checklists.map(c => {
     const v   = DATA.vehicles.find(v => v.id === c.vehicle_id);
-    const nok = DATA.responses.filter(r => r.checklist_id === c.id && r.status === 'nao_conforme').length;
+    const nok = DATA.responses.filter(r => r.checklist_id === c.id && r.status === 'pending').length;
     return `<tr>
       <td><strong>${v?.plate || '—'}</strong></td>
       <td>${c.driver_name}</td>
@@ -695,7 +695,7 @@ function showDetail(clId) {
           const item = DATA.items.find(i => i.id === r.item_id);
           return `<tr>
             <td>${item?.name || r.item_id}</td>
-            <td><span class="badge ${r.status === 'conforme' ? 'badge-green' : 'badge-red'}">${r.status === 'conforme' ? '✔ OK' : '✖ N/C'}</span></td>
+            <td><span class="badge ${r.status === 'ok' ? 'badge-green' : 'badge-red'}">${r.status === 'ok' ? '✔ OK' : '✖ N/C'}</span></td>
             <td>${r.photos && r.photos[0] ? `<img class="photo-thumb" src="${r.photos[0]}" onclick="window.open('${r.photos[0]}','_blank')">` : '—'}</td>
           </tr>`;
         }).join('')}
