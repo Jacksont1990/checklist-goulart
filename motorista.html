@@ -491,12 +491,11 @@ async function goToChecklist() {
     const rows = await supabase('checklists', {
       method: 'POST',
       body: {
-        vehicle_id:   state.vehicle.id,
-        driver_id:    state.driver.id,
-        driver_name:  state.driver.name,
-        status:       'em_andamento',
-        period_start: state.period.start,
-        period_end:   state.period.end
+        vehicle_id:      state.vehicle.id,
+        vehicle_plate:   state.vehicle.plate,
+        driver_name:     state.driver.name,
+        overall_status:  'em_andamento',
+        date:            new Date().toISOString()
       }
     });
     if (rows && rows[0]) state_checklistId = rows[0].id;
@@ -626,10 +625,12 @@ async function sendNotification(item, photoUrl) {
 // ============================================================
 async function finishChecklist() {
   // Atualiza status no banco
-  await supabase(`checklists?id=eq.${state.checklistId}`, {
-    method: 'PATCH',
-    body: { status: 'concluido', finished_at: new Date().toISOString() }
-  }).catch(console.error);
+  if (state.checklistId) {
+    await supabase(`checklists?id=eq.${state.checklistId}`, {
+      method: 'PATCH',
+      body: { overall_status: 'concluido' }
+    }).catch(console.error);
+  }
 
   const conformes   = state.responses.filter(r => r.status === 'conforme').length;
   const naoConformes = state.responses.filter(r => r.status === 'nao_conforme').length;
