@@ -540,7 +540,7 @@ function renderItem() {
 }
 
 function answerItem(status) {
-  if (status === 'conforme') {
+  if (status === 'ok') {
     saveResponse(state.items[state.currentIndex], 'ok', null);
     state.currentIndex++;
     renderItem();
