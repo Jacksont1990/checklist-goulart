@@ -664,7 +664,10 @@ async function finishQuiz() {
 
 async function resetQuiz() {
   if (!confirm('Tem certeza que quer reiniciar o quiz? Todos os dados serão apagados.')) return;
-  await sbRpc('reset_quiz');
+  // Deleta respostas e jogadores diretamente
+  await fetch(`${SUPABASE_URL}/rest/v1/quiz_answers?id=neq.00000000-0000-0000-0000-000000000000`, { method: 'DELETE', headers });
+  await fetch(`${SUPABASE_URL}/rest/v1/quiz_players?id=neq.00000000-0000-0000-0000-000000000000`, { method: 'DELETE', headers });
+  await sbPatch('quiz_session', { current_question: 0, status: 'waiting', started_at: null, updated_at: new Date().toISOString() }, 'id=eq.session');
   state = { currentQ: 0, status: 'waiting', questionOpenedAt: null, players: {}, answers: {}, revealed: false };
   renderWaiting();
   updateButtons();
