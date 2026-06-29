@@ -246,7 +246,7 @@
 // ============================================================
 // CONFIGURAÇÃO
 // ============================================================
-const SUPABASE_URL  = 'https://jdgolpmrmoamhwkiguws.supabase.co'
+const SUPABASE_URL  = 'https://jdgolpmrmoamhwkiguws.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o';
 
 // ============================================================
@@ -603,16 +603,9 @@ async function renderFinal() {
 // ============================================================
 // INIT
 // ============================================================
-// Recupera sessão salva (reload da página)
-const saved = localStorage.getItem('quiz_player');
-if (saved) {
-  try {
-    player = JSON.parse(saved);
-    startPolling();
-  } catch(e) { renderRegister(); }
-} else {
-  renderRegister();
-}
+// Sempre começa do zero — limpa sessão antiga
+localStorage.removeItem('quiz_player');
+renderRegister();
 </script>
 </body>
 </html>
