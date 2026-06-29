@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Goulart — Painel do Apresentador</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --green: #00762A;
+    --green-light: #00A33B;
+    --green-pale: #E8F5EC;
+    --red: #ED1C24;
+    --gold: #F5C400;
+    --dark: #1a1a1a;
+    --gray: #6b6b6b;
+    --bg: #f4f4f4;
+    --white: #ffffff;
+    --radius: 12px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--green);
+    color: white;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0,118,42,0.3);
+  }
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+  header span { font-size: 13px; opacity: 0.8; }
+
+  .status-badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .status-badge.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+  .status-badge.finished { background: var(--red); border-color: var(--red); }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--green-pale);
+  }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  /* QR CODE */
+  .qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  #qrcode canvas, #qrcode img { border-radius: 8px; }
+  .qr-url {
+    font-size: 11px;
+    color: var(--gray);
+    word-break: break-all;
+    text-align: center;
+    background: var(--green-pale);
+    padding: 6px 10px;
+    border-radius: 6px;
+    width: 100%;
+  }
+
+  /* PLAYERS LIST */
+  .players-count {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+  }
+  .players-count span { font-size: 14px; font-weight: 400; color: var(--gray); }
+  #players-list {
+    margin-top: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .player-chip {
+    background: var(--green-pale);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .player-chip::before {
+    content: '●';
+    font-size: 8px;
+    color: var(--green-light);
+  }
+
+  /* CONTROLS */
+  .controls { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-primary { background: var(--green); color: white; }
+  .btn-next    { background: var(--green-light); color: white; font-size: 17px; padding: 16px; }
+  .btn-danger  { background: var(--red); color: white; }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--green);
+    color: var(--green);
+  }
+
+  /* MAIN CONTENT */
+  .main-content { display: flex; flex-direction: column; gap: 20px; }
+
+  /* CURRENT QUESTION */
+  .question-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .question-number {
+    background: var(--green);
+    color: white;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .timer {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--red);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .question-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .option-card {
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 2px solid transparent;
+  }
+  .option-card.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+  .option-card.wrong   { background: #f8d7da; border-color: var(--red); color: #721c24; }
+  .option-card.neutral { background: var(--green-pale); color: var(--green); }
+  .option-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .option-card.correct .option-letter { background: #28a745; }
+  .option-card.wrong   .option-letter { background: var(--red); }
+
+  /* WAITING STATE */
+  .waiting-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .waiting-state .big-icon { font-size: 64px; margin-bottom: 16px; }
+  .waiting-state h2 { font-size: 26px; color: var(--green); margin-bottom: 8px; }
+  .waiting-state p  { font-size: 16px; color: var(--gray); }
+
+  /* LIVE ANSWERS */
+  .answers-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--green-pale);
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+  }
+  .answer-row.correct { background: #d4edda; }
+  .answer-row.wrong   { background: #f8d7da; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .answer-icon { font-size: 16px; flex-shrink: 0; }
+  .answer-name { font-weight: 600; flex: 1; }
+  .answer-time { font-size: 12px; color: var(--gray); }
+  .answers-progress {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .answers-progress-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* SCOREBOARD */
+  .score-table { width: 100%; border-collapse: collapse; }
+  .score-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+    padding: 6px 10px;
+    border-bottom: 2px solid var(--green-pale);
+  }
+  .score-table td {
+    padding: 10px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--green-pale);
+  }
+  .rank-medal { font-size: 20px; }
+  .score-bar-wrap { background: #e9e9e9; border-radius: 4px; height: 8px; margin-top: 4px; }
+  .score-bar { background: var(--green); border-radius: 4px; height: 8px; transition: width 0.5s; }
+  .score-pts { font-weight: 800; color: var(--green); font-size: 16px; }
+
+  /* FINISHED */
+  .podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 16px;
+    padding: 32px 0;
+  }
+  .podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .podium-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+  }
+  .p1 .podium-avatar { background: var(--gold); color: var(--dark); width: 72px; height: 72px; font-size: 30px; }
+  .p2 .podium-avatar { background: #b0bec5; }
+  .p3 .podium-avatar { background: #cd7f32; }
+  .podium-name { font-size: 13px; font-weight: 700; text-align: center; max-width: 100px; }
+  .podium-score { font-size: 12px; color: var(--gray); }
+  .podium-block {
+    border-radius: 8px 8px 0 0;
+    width: 80px;
+  }
+  .p1 .podium-block { background: var(--gold); height: 80px; opacity: 0.3; }
+  .p2 .podium-block { background: #b0bec5; height: 56px; opacity: 0.3; }
+  .p3 .podium-block { background: #cd7f32; height: 40px; opacity: 0.3; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; padding: 16px; }
+    .sidebar { display: grid; grid-template-columns: 1fr 1fr; }
+    .options-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎯 Quiz Goulart × Heineken</h1>
+  <div id="status-badge" class="status-badge">● Aguardando</div>
+</header>
+
+<div class="container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- QR CODE -->
+    <div class="card">
+      <div class="card-title">📱 Link para participantes</div>
+      <div class="qr-wrapper">
+        <div id="qrcode"></div>
+        <div class="qr-url" id="player-url">Configurando...</div>
+      </div>
+    </div>
+
+    <!-- PLAYERS -->
+    <div class="card">
+      <div class="card-title">👥 Participantes</div>
+      <div class="players-count" id="players-count">0 <span>online</span></div>
+      <div id="players-list"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="card">
+      <div class="card-title">🎮 Controles</div>
+      <div class="controls">
+        <button class="btn btn-next" id="btn-next" onclick="nextQuestion()">
+          ▶ Iniciar Quiz
+        </button>
+        <button class="btn btn-outline" id="btn-reveal" onclick="revealAnswer()" style="display:none">
+          👁 Revelar Resposta
+        </button>
+        <button class="btn btn-danger" onclick="resetQuiz()" style="margin-top:8px">
+          🔄 Reiniciar Quiz
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- QUESTION CARD -->
+    <div class="card" id="question-card">
+      <div id="waiting-state" class="waiting-state">
+        <div class="big-icon">🎯</div>
+        <h2>Quiz pronto para começar!</h2>
+        <p>Peça para os participantes apontarem a câmera para o QR code ao lado.<br>
+        Quando todos estiverem conectados, clique em <strong>Iniciar Quiz</strong>.</p>
+      </div>
+      <div id="question-state" style="display:none">
+        <div class="question-header">
+          <div class="question-number" id="q-number">Pergunta 1 / 10</div>
+          <div class="timer" id="timer">--</div>
+        </div>
+        <div class="question-text" id="q-text"></div>
+        <div class="options-grid" id="q-options"></div>
+        <div class="answers-progress"><div class="answers-progress-bar" id="progress-bar" style="width:0%"></div></div>
+        <div id="answers-live" class="answers-bar"></div>
+      </div>
+      <div id="finished-state" style="display:none">
+        <div style="text-align:center; padding: 16px 0 24px">
+          <div style="font-size:48px">🏆</div>
+          <h2 style="font-size:26px; color:var(--green); margin-top:8px">Quiz Encerrado!</h2>
+        </div>
+        <div class="podium" id="podium"></div>
+      </div>
+    </div>
+
+    <!-- SCOREBOARD -->
+    <div class="card">
+      <div class="card-title">🏅 Placar ao vivo</div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Participante</th>
+            <th>Acertos</th>
+            <th>Tempo total</th>
+            <th>Pontos</th>
+          </tr>
+        </thead>
+        <tbody id="score-body">
+          <tr><td colspan="5" style="text-align:center; color:var(--gray); padding:20px">Aguardando participantes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — substitua com suas credenciais do Supabase
+// ============================================================
+const SUPABASE_URL  = 'COLE_SUA_SUPABASE_URL_AQUI';
+const SUPABASE_ANON = 'COLE_SUA_ANON_KEY_AQUI';
+
+// URL da tela do participante (ajuste após hospedar no GitHub Pages)
+const PLAYER_URL = window.location.href.replace('host.html', 'player.html');
+
+// ============================================================
+// PERGUNTAS DO QUIZ
+// ============================================================
+const QUESTIONS = [
+  {
+    text: 'Quantos veículos a Goulart possui na frota?',
+    options: ['87 veículos', '113 veículos', '142 veículos', '98 veículos'],
+    correct: 1
+  },
+  {
+    text: 'Quantos colaboradores a Goulart possui atualmente?',
+    options: ['198 colaboradores', '230 colaboradores', '262 colaboradores', '310 colaboradores'],
+    correct: 2
+  },
+  {
+    text: 'Em que ano a Goulart foi fundada?',
+    options: ['2000', '2003', '2007', '2005'],
+    correct: 3
+  },
+  {
+    text: 'Em qual cidade a Goulart foi fundada?',
+    options: ['Florianópolis – SC', 'Antônio Carlos – SC', 'São José – SC', 'Itajaí – SC'],
+    correct: 1
+  },
+  {
+    text: 'Quais os nomes dos fundadores da Goulart Transportes?',
+    options: ['José e Carlos Goulart', 'Jair e Tarcísio Pedro Goulart', 'Paulo e Ricardo Goulart', 'Antônio e Pedro Goulart'],
+    correct: 1
+  },
+  {
+    text: 'Com quantos caminhões a Goulart começou suas operações?',
+    options: ['5 caminhões', '10 caminhões', '2 caminhões', '8 caminhões'],
+    correct: 2
+  },
+  {
+    text: 'Em qual cidade fica a nova operação Heineken que você vai integrar?',
+    options: ['Porto Alegre – RS', 'Caxias do Sul – RS', 'Cachoeirinha – RS', 'Canoas – RS'],
+    correct: 2
+  },
+  {
+    text: 'Quando começa a operação Heineken em Cachoeirinha?',
+    options: ['01 de junho de 2026', '08 de julho de 2026', '15 de agosto de 2026', '01 de setembro de 2026'],
+    correct: 1
+  },
+  {
+    text: 'Quantas carretas a Goulart possui na frota?',
+    options: ['15 carretas', '18 carretas', '22 carretas', '30 carretas'],
+    correct: 2
+  },
+  {
+    text: 'Qual é o slogan da Goulart Transportes?',
+    options: ['Qualidade em primeiro lugar', 'Força. Responsabilidade. Excelência na entrega.', 'Transportando o futuro', 'Confiança que move o Brasil'],
+    correct: 1
+  }
+];
+
+// ============================================================
+// ESTADO
+// ============================================================
+let state = {
+  currentQ: 0,       // 0 = não iniciado
+  status: 'waiting', // waiting | question | revealing | finished
+  questionOpenedAt: null,
+  players: {},
+  answers: {},       // { questionN: { playerId: { correct, time } } }
+  revealed: false
+};
+
+// ============================================================
+// SUPABASE
+// ============================================================
+const headers = {
+  'apikey': SUPABASE_ANON,
+  'Authorization': 'Bearer ' + SUPABASE_ANON,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
+
+async function sbGet(table, params = '') {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers });
+  return r.json();
+}
+
+async function sbPatch(table, body, match = '') {
+  await fetch(`${SUPABASE_URL}/rest/v1/${table}?${match}`, {
+    method: 'PATCH', headers,
+    body: JSON.stringify(body)
+  });
+}
+
+async function sbPost(table, body) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST', headers,
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+async function sbRpc(fn) {
+  await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST', headers,
+    body: JSON.stringify({})
+  });
+}
+
+// Realtime via SSE
+function subscribeRealtime() {
+  const ch = `${SUPABASE_URL}/realtime/v1/websocket?apikey=${SUPABASE_ANON}&vsn=1.0.0`;
+
+  // Polling leve como fallback — a cada 2s busca respostas e players
+  setInterval(async () => {
+    await loadPlayers();
+    if (state.status === 'question' || state.status === 'revealing') {
+      await loadAnswers(state.currentQ);
+    }
+    await updateScoreboard();
+  }, 2000);
+}
+
+// ============================================================
+// CARREGAR DADOS
+// ============================================================
+async function loadPlayers() {
+  const data = await sbGet('quiz_players', 'order=joined_at.asc');
+  if (!Array.isArray(data)) return;
+  data.forEach(p => { state.players[p.id] = p.name; });
+  renderPlayers(data);
+}
+
+async function loadAnswers(qNum) {
+  const data = await sbGet('quiz_answers', `question_number=eq.${qNum}`);
+  if (!Array.isArray(data)) return;
+  if (!state.answers[qNum]) state.answers[qNum] = {};
+  data.forEach(a => {
+    state.answers[qNum][a.player_id] = {
+      correct: a.is_correct,
+      time: a.response_time_ms,
+      name: a.player_name
+    };
+  });
+  renderLiveAnswers(qNum);
+}
+
+// ============================================================
+// PLACAR
+// ============================================================
+async function updateScoreboard() {
+  // Busca todas as respostas
+  const data = await sbGet('quiz_answers', 'order=answered_at.asc');
+  if (!Array.isArray(data)) return;
+
+  // Agrupa por jogador
+  const scores = {};
+  data.forEach(a => {
+    if (!scores[a.player_id]) {
+      scores[a.player_id] = { name: a.player_name, correct: 0, totalTime: 0, points: 0 };
+    }
+    if (a.is_correct) {
+      scores[a.player_id].correct++;
+      // Pontuação: 1000 pts - (tempo em ms / 10), mínimo 100
+      const pts = Math.max(100, 1000 - Math.floor((a.response_time_ms || 0) / 10));
+      scores[a.player_id].points += pts;
+    }
+    scores[a.player_id].totalTime += (a.response_time_ms || 0);
+  });
+
+  // Ordena
+  const ranked = Object.values(scores).sort((a, b) => b.points - a.points || a.totalTime - b.totalTime);
+
+  renderScoreboard(ranked);
+  if (state.status === 'finished') renderPodium(ranked);
+}
+
+// ============================================================
+// CONTROLES
+// ============================================================
+async function nextQuestion() {
+  const next = state.currentQ + 1;
+  if (next > QUESTIONS.length) {
+    await finishQuiz();
+    return;
+  }
+
+  state.currentQ = next;
+  state.status = 'question';
+  state.revealed = false;
+  state.questionOpenedAt = Date.now();
+
+  await sbPatch('quiz_session', {
+    current_question: next,
+    status: 'question',
+    updated_at: new Date().toISOString(),
+    started_at: next === 1 ? new Date().toISOString() : undefined
+  }, 'id=eq.session');
+
+  renderQuestion(next);
+  updateButtons();
+}
+
+async function revealAnswer() {
+  state.revealed = true;
+  state.status = 'revealing';
+  renderQuestion(state.currentQ, true);
+  updateButtons();
+}
+
+async function finishQuiz() {
+  state.status = 'finished';
+  await sbPatch('quiz_session', { status: 'finished', updated_at: new Date().toISOString() }, 'id=eq.session');
+  renderFinished();
+  updateButtons();
+}
+
+async function resetQuiz() {
+  if (!confirm('Tem certeza que quer reiniciar o quiz? Todos os dados serão apagados.')) return;
+  await sbRpc('reset_quiz');
+  state = { currentQ: 0, status: 'waiting', questionOpenedAt: null, players: {}, answers: {}, revealed: false };
+  renderWaiting();
+  updateButtons();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderPlayers(list) {
+  document.getElementById('players-count').innerHTML = `${list.length} <span>online</span>`;
+  const el = document.getElementById('players-list');
+  el.innerHTML = list.map(p => `<div class="player-chip">${p.name}</div>`).join('');
+}
+
+function renderQuestion(qNum, revealed = false) {
+  const q = QUESTIONS[qNum - 1];
+  document.getElementById('waiting-state').style.display = 'none';
+  document.getElementById('finished-state').style.display = 'none';
+  document.getElementById('question-state').style.display = 'block';
+
+  document.getElementById('q-number').textContent = `Pergunta ${qNum} / ${QUESTIONS.length}`;
+  document.getElementById('q-text').textContent = q.text;
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const grid = document.getElementById('q-options');
+  grid.innerHTML = q.options.map((opt, i) => {
+    let cls = 'neutral';
+    if (revealed) cls = i === q.correct ? 'correct' : 'wrong';
+    return `<div class="option-card ${cls}">
+      <div class="option-letter">${letters[i]}</div>
+      <span>${opt}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderLiveAnswers(qNum) {
+  const answers = state.answers[qNum] || {};
+  const total = Object.keys(state.players).length || 1;
+  const count = Object.keys(answers).length;
+
+  document.getElementById('progress-bar').style.width = `${Math.min(100, count / total * 100)}%`;
+
+  const el = document.getElementById('answers-live');
+  el.innerHTML = Object.entries(answers)
+    .sort((a, b) => (a[1].time || 99999) - (b[1].time || 99999))
+    .slice(0, 10)
+    .map(([, ans]) => `
+      <div class="answer-row ${ans.correct ? 'correct' : 'wrong'}">
+        <span class="answer-icon">${ans.correct ? '✅' : '❌'}</span>
+        <span class="answer-name">${ans.name}</span>
+        <span class="answer-time">${((ans.time || 0) / 1000).toFixed(1)}s</span>
+      </div>
+    `).join('');
+}
+
+function renderScoreboard(ranked) {
+  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+  const maxPts = ranked[0]?.points || 1;
+  const body = document.getElementById('score-body');
+
+  if (!ranked.length) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px">Aguardando respostas...</td></tr>';
+    return;
+  }
+
+  body.innerHTML = ranked.slice(0, 10).map((p, i) => `
+    <tr>
+      <td><span class="rank-medal">${medals[i] || (i + 1)}</span></td>
+      <td><strong>${p.name}</strong>
+        <div class="score-bar-wrap"><div class="score-bar" style="width:${p.points/maxPts*100}%"></div></div>
+      </td>
+      <td>${p.correct} / ${state.currentQ || '?'}</td>
+      <td>${(p.totalTime / 1000).toFixed(1)}s</td>
+      <td class="score-pts">${p.points}</td>
+    </tr>
+  `).join('');
+}
+
+function renderPodium(ranked) {
+  const top3 = ranked.slice(0, 3);
+  const podium = document.getElementById('podium');
+  const initials = n => n.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const order = [1, 0, 2]; // 2º, 1º, 3º visualmente
+  podium.innerHTML = order.filter(i => top3[i]).map(i => {
+    const p = top3[i];
+    const cls = ['p1', 'p2', 'p3'][i];
+    return `<div class="podium-place ${cls}">
+      <div class="podium-avatar">${initials(p.name)}</div>
+      <div class="podium-name">${p.name}</div>
+      <div class="podium-score">${p.points} pts</div>
+      <div class="podium-block"></div>
+    </div>`;
+  }).join('');
+}
+
+function renderWaiting() {
+  document.getElementById('waiting-state').style.display = 'block';
+  document.getElementById('question-state').style.display = 'none';
+  document.getElementById('finished-state').style.display = 'none';
+  document.getElementById('score-body').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px">Aguardando participantes...</td></tr>';
+  document.getElementById('players-list').innerHTML = '';
+  document.getElementById('players-count').innerHTML = '0 <span>online</span>';
+  updateStatusBadge('waiting');
+}
+
+function renderFinished() {
+  document.getElementById('waiting-state').style.display = 'none';
+  document.getElementById('question-state').style.display = 'none';
+  document.getElementById('finished-state').style.display = 'block';
+  updateStatusBadge('finished');
+}
+
+function updateButtons() {
+  const btnNext = document.getElementById('btn-next');
+  const btnReveal = document.getElementById('btn-reveal');
+
+  if (state.status === 'waiting') {
+    btnNext.textContent = '▶ Iniciar Quiz';
+    btnNext.style.display = 'flex';
+    btnReveal.style.display = 'none';
+  } else if (state.status === 'question') {
+    btnReveal.style.display = 'flex';
+    const isLast = state.currentQ >= QUESTIONS.length;
+    btnNext.textContent = isLast ? '🏁 Encerrar Quiz' : `▶ Próxima (${state.currentQ + 1}/${QUESTIONS.length})`;
+    btnNext.style.display = 'none'; // só mostra após revelar
+    updateStatusBadge('active');
+  } else if (state.status === 'revealing') {
+    btnReveal.style.display = 'none';
+    const isLast = state.currentQ >= QUESTIONS.length;
+    btnNext.textContent = isLast ? '🏁 Encerrar Quiz' : `▶ Próxima pergunta`;
+    btnNext.style.display = 'flex';
+  } else if (state.status === 'finished') {
+    btnNext.style.display = 'none';
+    btnReveal.style.display = 'none';
+  }
+}
+
+function updateStatusBadge(s) {
+  const el = document.getElementById('status-badge');
+  el.className = 'status-badge';
+  if (s === 'active')   { el.classList.add('active');   el.textContent = `● Pergunta ${state.currentQ}/${QUESTIONS.length}`; }
+  if (s === 'waiting')  { el.textContent = '● Aguardando'; }
+  if (s === 'finished') { el.classList.add('finished'); el.textContent = '● Encerrado'; }
+}
+
+// ============================================================
+// QR CODE
+// ============================================================
+function setupQR() {
+  const urlEl = document.getElementById('player-url');
+  urlEl.textContent = PLAYER_URL;
+  new QRCode(document.getElementById('qrcode'), {
+    text: PLAYER_URL,
+    width: 200,
+    height: 200,
+    colorDark: '#00762A',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  setupQR();
+  await loadPlayers();
+  subscribeRealtime();
+  renderWaiting();
+  updateButtons();
+}
+
+init();
+</script>
+</body>
+</html>
