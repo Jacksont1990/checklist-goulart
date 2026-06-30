@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Quiz Goulart × Heineken</title>
 <style>
   :root {
@@ -603,9 +606,38 @@ async function renderFinal() {
 // ============================================================
 // INIT
 // ============================================================
-// Sempre começa do zero — limpa sessão antiga
-localStorage.removeItem('quiz_player');
-renderRegister();
+// Verifica se há sessão salva E se o quiz ainda está ativo
+const saved = localStorage.getItem('quiz_player');
+if (saved) {
+  try {
+    const p = JSON.parse(saved);
+    // Verifica se o quiz está em waiting — se sim, limpa e pede nome de novo
+    fetch(`https://jdgolpmrmoamhwkiguws.supabase.co/rest/v1/quiz_session?id=eq.session`, {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o'
+      }
+    }).then(r => r.json()).then(data => {
+      if (data && data[0] && data[0].status === 'waiting') {
+        // Quiz reiniciado — pede nome de novo
+        localStorage.removeItem('quiz_player');
+        renderRegister();
+      } else {
+        // Quiz em andamento — reconecta com nome salvo
+        player = p;
+        startPolling();
+      }
+    }).catch(() => {
+      localStorage.removeItem('quiz_player');
+      renderRegister();
+    });
+  } catch(e) {
+    localStorage.removeItem('quiz_player');
+    renderRegister();
+  }
+} else {
+  renderRegister();
+}
 </script>
 </body>
 </html>
