@@ -6,43 +6,22 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Quiz Goulart Transportes</title>
+<title>Quiz Goulart</title>
 <style>
-  :root {
-    --green: #00762A;
-    --green-light: #00A33B;
-    --green-pale: #E8F5EC;
-    --red: #ED1C24;
-    --gold: #F5C400;
-    --dark: #1a1a1a;
-    --gray: #888;
-    --white: #ffffff;
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--green);
+    background: #00762A;
     min-height: 100vh;
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px 16px;
   }
-
-  /* LOGO */
-  .logo {
-    color: white;
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  .logo h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .logo p  { font-size: 13px; opacity: 0.75; margin-top: 2px; }
-
-  /* CARD */
+  .logo { color: white; text-align: center; margin-bottom: 24px; }
+  .logo h1 { font-size: 22px; font-weight: 800; }
+  .logo p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
   .card {
     background: white;
     border-radius: 20px;
@@ -51,614 +30,322 @@
     max-width: 420px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.20);
   }
-
-  /* REGISTRO */
   .reg-icon { font-size: 52px; text-align: center; margin-bottom: 12px; }
-  .reg-title { font-size: 22px; font-weight: 800; text-align: center; color: var(--green); margin-bottom: 6px; }
-  .reg-sub { font-size: 14px; text-align: center; color: var(--gray); margin-bottom: 24px; line-height: 1.5; }
-
+  .reg-title { font-size: 22px; font-weight: 800; text-align: center; color: #00762A; margin-bottom: 6px; }
+  .reg-sub { font-size: 14px; text-align: center; color: #888; margin-bottom: 24px; }
   input[type="text"] {
-    width: 100%;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 17px;
-    outline: none;
-    transition: border-color 0.2s;
-    font-family: inherit;
-    color: var(--dark);
+    width: 100%; border: 2px solid #e0e0e0; border-radius: 12px;
+    padding: 16px; font-size: 17px; outline: none; font-family: inherit;
   }
-  input[type="text"]:focus { border-color: var(--green); }
-  input[type="text"]::placeholder { color: #bbb; }
-
+  input[type="text"]:focus { border-color: #00762A; }
   .btn {
-    width: 100%;
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 12px;
+    width: 100%; border: none; border-radius: 12px; padding: 16px;
+    font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 12px;
     font-family: inherit;
-    transition: all 0.15s;
   }
-  .btn:active { transform: scale(0.97); }
-  .btn-green { background: var(--green); color: white; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* AGUARDANDO */
+  .btn-green { background: #00762A; color: white; }
+  .btn:disabled { opacity: 0.5; }
   .wait-icon { font-size: 56px; text-align: center; margin-bottom: 16px; }
-  .wait-title { font-size: 20px; font-weight: 800; text-align: center; color: var(--green); margin-bottom: 8px; }
-  .wait-sub { font-size: 14px; text-align: center; color: var(--gray); line-height: 1.6; }
-  .wait-name { color: var(--green); font-weight: 700; }
-  .dots { display: inline-block; }
-  .dots::after {
-    content: '';
-    animation: dots 1.5s infinite;
-  }
-  @keyframes dots {
-    0%   { content: ''; }
-    33%  { content: '.'; }
-    66%  { content: '..'; }
-    100% { content: '...'; }
-  }
+  .wait-title { font-size: 20px; font-weight: 800; text-align: center; color: #00762A; margin-bottom: 8px; }
+  .wait-sub { font-size: 14px; text-align: center; color: #888; }
   .pulse {
-    width: 48px; height: 48px;
-    border: 4px solid var(--green-pale);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    margin: 20px auto 0;
-    animation: spin 1s linear infinite;
+    width: 48px; height: 48px; border: 4px solid #E8F5EC;
+    border-top-color: #00762A; border-radius: 50%;
+    margin: 20px auto 0; animation: spin 1s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* PERGUNTA */
-  .q-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .q-num {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gray);
-  }
-  .q-timer {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--red);
-    font-variant-numeric: tabular-nums;
-  }
-  .q-text {
-    font-size: 19px;
-    font-weight: 700;
-    color: var(--dark);
-    line-height: 1.4;
-    margin-bottom: 20px;
-  }
+  .q-num { font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text { font-size: 19px; font-weight: 700; color: #1a1a1a; line-height: 1.4; margin-bottom: 20px; }
   .options { display: flex; flex-direction: column; gap: 10px; }
-  .option-btn {
-    width: 100%;
-    background: var(--green-pale);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 16px 18px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--green);
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: inherit;
-    transition: all 0.15s;
+  .opt-btn {
+    width: 100%; background: #E8F5EC; border: 2px solid transparent;
+    border-radius: 12px; padding: 16px 18px; font-size: 16px; font-weight: 600;
+    color: #00762A; cursor: pointer; text-align: left;
+    display: flex; align-items: center; gap: 12px; font-family: inherit;
   }
-  .option-btn:active { transform: scale(0.98); }
-  .option-btn.selected { background: var(--green); color: white; border-color: var(--green); }
-  .option-btn.correct  { background: #d4edda; color: #155724; border-color: #28a745; }
-  .option-btn.wrong    { background: #f8d7da; color: #721c24; border-color: var(--red); }
-  .option-btn:disabled { cursor: default; }
+  .opt-btn.selected { background: #00762A; color: white; }
+  .opt-btn.correct { background: #d4edda; color: #155724; border-color: #28a745; }
+  .opt-btn.wrong { background: #f8d7da; color: #721c24; border-color: #ED1C24; }
+  .opt-btn:disabled { cursor: default; }
   .opt-letter {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: var(--green);
-    color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 800;
-    flex-shrink: 0;
+    width: 30px; height: 30px; border-radius: 50%; background: #00762A;
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
   }
-  .option-btn.selected .opt-letter { background: rgba(255,255,255,0.3); }
-  .option-btn.correct .opt-letter  { background: #28a745; }
-  .option-btn.wrong .opt-letter    { background: var(--red); }
-
-  /* RESPONDEU */
+  .opt-btn.selected .opt-letter { background: rgba(255,255,255,0.3); }
+  .opt-btn.correct .opt-letter { background: #28a745; }
+  .opt-btn.wrong .opt-letter { background: #ED1C24; }
   .answered-icon { font-size: 56px; text-align: center; margin-bottom: 12px; }
-  .answered-title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; }
-  .answered-sub { font-size: 14px; text-align: center; color: var(--gray); }
+  .answered-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 6px; }
   .time-badge {
-    display: inline-block;
-    background: var(--green-pale);
-    color: var(--green);
-    font-weight: 700;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 14px;
-    margin-top: 12px;
+    display: inline-block; background: #E8F5EC; color: #00762A;
+    font-weight: 700; border-radius: 20px; padding: 6px 16px;
+    font-size: 14px; margin-top: 12px; width: 100%; text-align: center;
   }
-
-  /* REVELAR */
-  .reveal-result {
-    text-align: center;
-    padding: 8px 0;
-  }
-  .reveal-icon { font-size: 52px; margin-bottom: 8px; }
-  .reveal-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-  .reveal-sub { font-size: 14px; color: var(--gray); }
-  .reveal-correct { color: #28a745; }
-  .reveal-wrong { color: var(--red); }
-
-  /* PLACAR FINAL */
-  .final-rank {
-    text-align: center;
-  }
+  .final-rank { text-align: center; }
   .rank-icon { font-size: 64px; margin-bottom: 8px; }
-  .rank-title { font-size: 24px; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+  .rank-title { font-size: 24px; font-weight: 800; color: #00762A; margin-bottom: 4px; }
   .rank-name { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-  .rank-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 16px;
-  }
-  .stat-box {
-    background: var(--green-pale);
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
-  }
-  .stat-value { font-size: 26px; font-weight: 800; color: var(--green); }
-  .stat-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
-
-  .footer-logo {
-    color: rgba(255,255,255,0.5);
-    font-size: 12px;
-    text-align: center;
-    margin-top: 20px;
-  }
+  .rank-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .stat-box { background: #E8F5EC; border-radius: 12px; padding: 14px; text-align: center; }
+  .stat-value { font-size: 26px; font-weight: 800; color: #00762A; }
+  .stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+  .footer-logo { color: rgba(255,255,255,0.5); font-size: 12px; text-align: center; margin-top: 20px; }
+  .error-msg { color: #ED1C24; font-size: 13px; text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
-
 <div class="logo">
-  <h1>🎯 Quiz Goulart</h1>
-  <p>Cachoeirinha – RS</p>
+  <h1>🎯 Quiz Goulart Transportes</h1>
 </div>
-
-<div class="card" id="card">
-  <!-- Conteúdo dinâmico -->
-</div>
-
+<div class="card" id="card"></div>
 <div class="footer-logo">goularttransporte.com.br</div>
 
 <script>
-// ============================================================
-// CONFIGURAÇÃO
-// ============================================================
 const SUPABASE_URL  = 'https://jdgolpmrmoamhwkiguws.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o';
 
-// ============================================================
-// PERGUNTAS (mesmas do host)
-// ============================================================
 const QUESTIONS = [
-  {
-    text: 'O que significa a sigla OPA?',
-    options: ['Ordem, Planejamento e Ação', 'Observar, Planejar e Agir', 'Organizar, Proteger e Atuar', 'Operar, Prevenir e Alertar'],
-    correct: 1
-  },
-  {
-    text: 'Quantos cones devem ser usados para isolar a área do caminhão?',
-    options: ['2 cones', '4 cones', '3 cones', '5 cones'],
-    correct: 2
-  },
-  {
-    text: 'Quantas pessoas são permitidas subir na plataforma do caminhão ao mesmo tempo?',
-    options: ['Até 2 pessoas', 'Até 3 pessoas', 'Sem limite definido', 'Apenas 1 pessoa'],
-    correct: 3
-  },
-  {
-    text: 'Quais são 3 itens obrigatórios de segurança do veículo?',
-    options: ['Cinto, airbag e freio ABS', 'Extintor, triângulo e colete', 'Pega mão, plataforma retrátil e protetor lateral', 'Cone, lanterna e capacete'],
-    correct: 2
-  },
-  {
-    text: 'Qual é a postura correta ao pegar uma carga do piso?',
-    options: ['Dobrar a coluna e manter os joelhos esticados', 'Dobrar os joelhos e manter a coluna ereta', 'Usar apenas um braço para não forçar', 'Agachar completamente e usar os ombros'],
-    correct: 1
-  },
-  {
-    text: 'Qual a distância mínima que os cones devem ter do caminhão?',
-    options: ['50 centímetros', '2 metros', '3 metros', '1 metro'],
-    correct: 3
-  },
-  {
-    text: 'Quantos veículos a Goulart possui na frota?',
-    options: ['87 veículos', '98 veículos', '113 veículos', '142 veículos'],
-    correct: 2
-  },
-  {
-    text: 'Quantos colaboradores a Goulart possui atualmente?',
-    options: ['198 colaboradores', '230 colaboradores', '310 colaboradores', '262 colaboradores'],
-    correct: 3
-  },
-  {
-    text: 'Em que ano a Goulart foi fundada?',
-    options: ['2000', '2003', '2007', '2005'],
-    correct: 3
-  },
-  {
-    text: 'Em qual cidade a Goulart foi fundada?',
-    options: ['Florianópolis – SC', 'São José – SC', 'Antônio Carlos – SC', 'Itajaí – SC'],
-    correct: 2
-  },
-  {
-    text: 'Quais os nomes dos fundadores da Goulart Transportes?',
-    options: ['José e Carlos Goulart', 'Paulo e Ricardo Goulart', 'Antônio e Pedro Goulart', 'Jair e Tarcísio Pedro Goulart'],
-    correct: 3
-  },
-  {
-    text: 'Com quantos caminhões a Goulart começou suas operações?',
-    options: ['5 caminhões', '8 caminhões', '2 caminhões', '10 caminhões'],
-    correct: 2
-  },
-  {
-    text: 'Em qual cidade fica a nova operação Heineken que você vai integrar?',
-    options: ['Porto Alegre – RS', 'Caxias do Sul – RS', 'Canoas – RS', 'Cachoeirinha – RS'],
-    correct: 3
-  },
-  {
-    text: 'O que significa a sigla EPI?',
-    options: ['Equipamento de Proteção Integrado', 'Equipamento de Prevenção Individual', 'Equipamento de Produção Interna', 'Equipamento de Proteção Individual'],
-    correct: 3
-  }
+  { text: 'O que significa a sigla OPA?', options: ['Ordem, Planejamento e Ação', 'Observar, Planejar e Agir', 'Organizar, Proteger e Atuar', 'Operar, Prevenir e Alertar'], correct: 1 },
+  { text: 'Quantos cones devem ser usados para isolar a área do caminhão?', options: ['2 cones', '4 cones', '3 cones', '5 cones'], correct: 2 },
+  { text: 'Quantas pessoas são permitidas subir na plataforma do caminhão ao mesmo tempo?', options: ['Até 2 pessoas', 'Até 3 pessoas', 'Sem limite definido', 'Apenas 1 pessoa'], correct: 3 },
+  { text: 'Quais são 3 itens obrigatórios de segurança do veículo?', options: ['Cinto, airbag e freio ABS', 'Extintor, triângulo e colete', 'Pega mão, plataforma retrátil e protetor lateral', 'Cone, lanterna e capacete'], correct: 2 },
+  { text: 'Qual é a postura correta ao pegar uma carga do piso?', options: ['Dobrar a coluna e manter os joelhos esticados', 'Dobrar os joelhos e manter a coluna ereta', 'Usar apenas um braço para não forçar', 'Agachar completamente e usar os ombros'], correct: 1 },
+  { text: 'Qual a distância mínima que os cones devem ter do caminhão?', options: ['50 centímetros', '2 metros', '3 metros', '1 metro'], correct: 3 },
+  { text: 'Quantos veículos a Goulart possui na frota?', options: ['87 veículos', '98 veículos', '113 veículos', '142 veículos'], correct: 2 },
+  { text: 'Quantos colaboradores a Goulart possui atualmente?', options: ['198 colaboradores', '230 colaboradores', '310 colaboradores', '262 colaboradores'], correct: 3 },
+  { text: 'Em que ano a Goulart foi fundada?', options: ['2000', '2003', '2007', '2005'], correct: 3 },
+  { text: 'Em qual cidade a Goulart foi fundada?', options: ['Florianópolis – SC', 'São José – SC', 'Antônio Carlos – SC', 'Itajaí – SC'], correct: 2 },
+  { text: 'Quais os nomes dos fundadores da Goulart Transportes?', options: ['José e Carlos Goulart', 'Paulo e Ricardo Goulart', 'Antônio e Pedro Goulart', 'Jair e Tarcísio Pedro Goulart'], correct: 3 },
+  { text: 'Com quantos caminhões a Goulart começou suas operações?', options: ['5 caminhões', '8 caminhões', '2 caminhões', '10 caminhões'], correct: 2 },
+  { text: 'Em qual cidade fica a nova operação Heineken que você vai integrar?', options: ['Porto Alegre – RS', 'Caxias do Sul – RS', 'Canoas – RS', 'Cachoeirinha – RS'], correct: 3 },
+  { text: 'O que significa a sigla EPI?', options: ['Equipamento de Proteção Integrado', 'Equipamento de Prevenção Individual', 'Equipamento de Produção Interna', 'Equipamento de Proteção Individual'], correct: 3 }
 ];
 
-// ============================================================
-// ESTADO LOCAL
-// ============================================================
-let player = { id: null, name: null };
-let myAnswers = {};     // { qNum: { answerIndex, correct, time } }
-let lastQuestion = 0;
-let lastStatus = '';
-let questionOpenedAt = null;
-let timerInterval = null;
-
-// ============================================================
-// SUPABASE
-// ============================================================
-const headers = {
+const hdrs = {
   'apikey': SUPABASE_ANON,
   'Authorization': 'Bearer ' + SUPABASE_ANON,
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
 };
 
-async function sbGet(table, params = '') {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers });
+let playerId = null;
+let playerName = null;
+let myAnswers = {};
+let lastQ = 0;
+let lastStatus = '';
+let qOpenedAt = null;
+let pollTimer = null;
+
+// ── API helpers ──────────────────────────────────────────────
+async function apiGet(table, qs) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${qs}`, { headers: hdrs });
+  if (!r.ok) throw new Error(`GET ${table} → ${r.status}`);
   return r.json();
 }
 
-async function sbPost(table, body) {
+async function apiPost(table, body) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-    method: 'POST', headers: { ...headers, 'Prefer': 'return=representation' },
-    body: JSON.stringify(body)
+    method: 'POST', headers: hdrs, body: JSON.stringify(body)
   });
-  return r.json();
+  const txt = await r.text();
+  if (!r.ok) throw new Error(`POST ${table} → ${r.status}: ${txt}`);
+  return txt ? JSON.parse(txt) : [];
 }
 
-// ============================================================
-// REGISTRO
-// ============================================================
-function renderRegister() {
+// ── Register ─────────────────────────────────────────────────
+function showRegister() {
   document.getElementById('card').innerHTML = `
     <div class="reg-icon">👋</div>
     <div class="reg-title">Bem-vindo ao Quiz!</div>
-    <div class="reg-sub">Digite seu nome completo para entrar na competição.</div>
-    <input type="text" id="name-input" placeholder="Seu nome completo" maxlength="60" autocomplete="off" autofocus>
-    <button class="btn btn-green" id="btn-enter" onclick="enterQuiz()">Entrar no Quiz 🚀</button>
+    <div class="reg-sub">Digite seu nome completo para entrar.</div>
+    <input type="text" id="nameInput" placeholder="Seu nome completo" maxlength="60" autocomplete="off">
+    <div class="error-msg" id="errMsg"></div>
+    <button class="btn btn-green" id="enterBtn" onclick="doEnter()">Entrar no Quiz 🚀</button>
   `;
-  const input = document.getElementById('name-input');
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') enterQuiz(); });
+  document.getElementById('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') doEnter(); });
 }
 
-async function enterQuiz() {
-  const name = document.getElementById('name-input').value.trim();
-  if (!name || name.length < 2) {
-    document.getElementById('name-input').style.borderColor = 'var(--red)';
+async function doEnter() {
+  const name = (document.getElementById('nameInput').value || '').trim();
+  if (name.length < 2) {
+    document.getElementById('errMsg').textContent = 'Digite seu nome completo.';
     return;
   }
-  document.getElementById('btn-enter').disabled = true;
-  document.getElementById('btn-enter').textContent = 'Entrando...';
-
-  const data = await sbPost('quiz_players', { name });
-  if (data && data[0]) {
-    player.id = data[0].id;
-    player.name = data[0].name;
-    localStorage.setItem('quiz_player', JSON.stringify(player));
+  document.getElementById('enterBtn').disabled = true;
+  document.getElementById('enterBtn').textContent = 'Entrando...';
+  document.getElementById('errMsg').textContent = '';
+  try {
+    const rows = await apiPost('quiz_players', { name });
+    if (!rows || !rows[0]) throw new Error('Sem retorno');
+    playerId = rows[0].id;
+    playerName = rows[0].name;
     startPolling();
-  } else {
-    alert('Erro ao entrar. Tente novamente.');
-    document.getElementById('btn-enter').disabled = false;
-    document.getElementById('btn-enter').textContent = 'Entrar no Quiz 🚀';
+  } catch(e) {
+    document.getElementById('errMsg').textContent = 'Erro ao entrar. Tente novamente.';
+    document.getElementById('enterBtn').disabled = false;
+    document.getElementById('enterBtn').textContent = 'Entrar no Quiz 🚀';
   }
 }
 
-// ============================================================
-// POLLING DA SESSÃO
-// ============================================================
-async function pollSession() {
-  const data = await sbGet('quiz_session', 'id=eq.session');
-  if (!data || !data[0]) return;
-
-  const session = data[0];
-  const qNum = session.current_question;
-  const status = session.status;
-
-  // Reset detectado
-  if (status === 'waiting' && lastStatus !== 'waiting') {
-    myAnswers = {};
-    lastQuestion = 0;
-    lastStatus = 'waiting';
-    player = { id: null, name: null };
-    localStorage.removeItem('quiz_player');
-    renderRegister();
-    return;
-  }
-
-  // Nova pergunta
-  if (status === 'question' && qNum !== lastQuestion) {
-    lastQuestion = qNum;
-    lastStatus = 'question';
-    questionOpenedAt = Date.now();
-    renderQuestion(qNum);
-    return;
-  }
-
-  // Revelar resposta — host muda para 'question' com mesmo qNum mas o player já respondeu
-  // Detecta quando o host revela (ficamos esperando no "aguardando revelar")
-  if ((status === 'question' || status === 'revealing') && lastStatus === 'answered') {
-    lastStatus = 'revealing';
-    renderReveal(lastQuestion);
-    return;
-  }
-
-  // Encerrado
-  if (status === 'finished' && lastStatus !== 'finished') {
-    lastStatus = 'finished';
-    stopTimer();
-    await renderFinal();
-    return;
-  }
-}
-
+// ── Polling ───────────────────────────────────────────────────
 function startPolling() {
-  renderWaiting();
-  setInterval(pollSession, 1500);
+  showWaiting();
+  pollTimer = setInterval(poll, 1500);
 }
 
-// ============================================================
-// TELAS
-// ============================================================
-function renderWaiting() {
-  stopTimer();
+async function poll() {
+  try {
+    const rows = await apiGet('quiz_session', 'id=eq.session');
+    if (!rows || !rows[0]) return;
+    const { current_question: qNum, status } = rows[0];
+
+    // Quiz reset
+    if (status === 'waiting' && lastStatus !== '' && lastStatus !== 'waiting') {
+      clearInterval(pollTimer);
+      playerId = null; playerName = null; myAnswers = {}; lastQ = 0; lastStatus = '';
+      showRegister();
+      return;
+    }
+
+    // New question
+    if (status === 'question' && qNum !== lastQ) {
+      lastQ = qNum;
+      lastStatus = 'question';
+      qOpenedAt = Date.now();
+      showQuestion(qNum);
+      return;
+    }
+
+    // Finished
+    if (status === 'finished' && lastStatus !== 'finished') {
+      lastStatus = 'finished';
+      showFinal();
+      return;
+    }
+
+    lastStatus = status;
+  } catch(e) { /* ignore poll errors */ }
+}
+
+// ── Screens ───────────────────────────────────────────────────
+function showWaiting() {
   document.getElementById('card').innerHTML = `
     <div class="wait-icon">⏳</div>
-    <div class="wait-title">Você está na fila!</div>
-    <div class="wait-sub">
-      Olá, <span class="wait-name">${player.name}</span>!<br><br>
-      Aguardando o apresentador iniciar o quiz<span class="dots"></span>
-    </div>
+    <div class="wait-title">Você está dentro!</div>
+    <div class="wait-sub">Olá, <strong>${playerName}</strong>!<br><br>Aguardando o apresentador iniciar o quiz...</div>
     <div class="pulse"></div>
   `;
 }
 
-function renderQuestion(qNum) {
-  stopTimer();
+function showQuestion(qNum) {
   const q = QUESTIONS[qNum - 1];
   if (!q) return;
+  const already = myAnswers[qNum];
+  if (already !== undefined) { showAnswered(qNum); return; }
 
-  const letters = ['A', 'B', 'C', 'D'];
-  const alreadyAnswered = myAnswers[qNum] !== undefined;
-
-  if (alreadyAnswered) {
-    renderAnswered(qNum);
-    return;
-  }
-
+  const letters = ['A','B','C','D'];
   document.getElementById('card').innerHTML = `
-    <div class="q-header">
-      <div class="q-num">Pergunta ${qNum} / ${QUESTIONS.length}</div>
-      <div class="q-timer" id="q-timer">0.0s</div>
-    </div>
+    <div class="q-num">Pergunta ${qNum} / ${QUESTIONS.length}</div>
     <div class="q-text">${q.text}</div>
-    <div class="options" id="options">
+    <div class="options" id="opts">
       ${q.options.map((opt, i) => `
-        <button class="option-btn" onclick="selectAnswer(${qNum}, ${i})">
+        <button class="opt-btn" id="opt${i}" onclick="doAnswer(${qNum}, ${i})">
           <div class="opt-letter">${letters[i]}</div>
           <span>${opt}</span>
-        </button>
-      `).join('')}
+        </button>`).join('')}
     </div>
   `;
-
-  startTimer();
 }
 
-function startTimer() {
-  const el = () => document.getElementById('q-timer');
-  timerInterval = setInterval(() => {
-    if (!questionOpenedAt || !el()) return;
-    const secs = ((Date.now() - questionOpenedAt) / 1000).toFixed(1);
-    if (el()) el().textContent = secs + 's';
-  }, 100);
-}
-
-function stopTimer() {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-}
-
-async function selectAnswer(qNum, idx) {
+async function doAnswer(qNum, idx) {
   if (myAnswers[qNum] !== undefined) return;
-  const responseTime = Date.now() - questionOpenedAt;
   const q = QUESTIONS[qNum - 1];
-  const isCorrect = idx === q.correct;
+  const responseTime = Date.now() - qOpenedAt;
+  const isCorrect = (idx === q.correct);
 
-  myAnswers[qNum] = { answerIndex: idx, correct: isCorrect, time: responseTime };
-  stopTimer();
-  lastStatus = 'answered';
+  // Disable all buttons immediately
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById('opt' + i);
+    if (btn) { btn.disabled = true; if (i === idx) btn.classList.add('selected'); }
+  }
 
-  // Desabilita botões
-  document.querySelectorAll('.option-btn').forEach((b, i) => {
-    b.disabled = true;
-    if (i === idx) b.classList.add('selected');
-  });
+  myAnswers[qNum] = { idx, isCorrect, responseTime };
 
-  // Salva no Supabase
-  const result = await sbPost('quiz_answers', {
-    player_id: player.id,
-    player_name: player.name,
-    question_number: qNum,
-    answer: q.options[idx],
-    is_correct: isCorrect,
-    response_time_ms: responseTime
-  });
-  console.log('Resposta salva:', result);
-
-  renderAnswered(qNum);
-}
-
-function renderAnswered(qNum) {
-  const ans = myAnswers[qNum];
-  document.getElementById('card').innerHTML = `
-    <div class="answered-icon">${ans.correct ? '⚡' : '🤔'}</div>
-    <div class="answered-title" style="color: ${ans.correct ? 'var(--green)' : 'var(--gray)'}">
-      ${ans.correct ? 'Resposta enviada!' : 'Resposta enviada!'}
-    </div>
-    <div class="answered-sub">
-      Aguardando o apresentador revelar a resposta<span class="dots"></span>
-    </div>
-    <div class="time-badge">⏱ ${(ans.time / 1000).toFixed(1)}s</div>
-  `;
-}
-
-function renderReveal(qNum) {
-  const ans = myAnswers[qNum];
-  const q = QUESTIONS[qNum - 1];
-  document.getElementById('card').innerHTML = `
-    <div class="reveal-result">
-      <div class="reveal-icon">${ans.correct ? '🎉' : '😅'}</div>
-      <div class="reveal-title ${ans.correct ? 'reveal-correct' : 'reveal-wrong'}">
-        ${ans.correct ? 'Correto! 🏆' : 'Errou dessa vez!'}
-      </div>
-      <div class="reveal-sub" style="margin-bottom:16px">
-        ${ans.correct
-          ? `Você respondeu em <strong>${(ans.time/1000).toFixed(1)}s</strong> — boa velocidade!`
-          : `A resposta correta era: <strong>${q.options[q.correct]}</strong>`
-        }
-      </div>
-      <div class="wait-sub">
-        Aguardando a próxima pergunta<span class="dots"></span>
-      </div>
-    </div>
-  `;
-}
-
-async function renderFinal() {
-  // Busca placar completo
-  const data = await sbGet('quiz_answers', 'order=answered_at.asc');
-  const scores = {};
-  (Array.isArray(data) ? data : []).forEach(a => {
-    if (!scores[a.player_id]) scores[a.player_id] = { name: a.player_name, correct: 0, totalTime: 0, points: 0 };
-    if (a.is_correct) {
-      scores[a.player_id].correct++;
-      scores[a.player_id].points += Math.max(100, 1000 - Math.floor((a.response_time_ms || 0) / 10));
-    }
-    scores[a.player_id].totalTime += (a.response_time_ms || 0);
-  });
-
-  const ranked = Object.entries(scores).sort((a, b) => b[1].points - a[1].points || a[1].totalTime - b[1].totalTime);
-  const myRank = ranked.findIndex(([id]) => id === player.id) + 1;
-  const myScore = scores[player.id] || { correct: 0, points: 0, totalTime: 0 };
-
-  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
-  const medal = medals[myRank - 1] || `#${myRank}`;
-
-  document.getElementById('card').innerHTML = `
-    <div class="final-rank">
-      <div class="rank-icon">${medal}</div>
-      <div class="rank-title">${myRank}º lugar!</div>
-      <div class="rank-name">${player.name}</div>
-      <div class="rank-stats">
-        <div class="stat-box">
-          <div class="stat-value">${myScore.correct}</div>
-          <div class="stat-label">acertos de ${QUESTIONS.length}</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value">${myScore.points}</div>
-          <div class="stat-label">pontos totais</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value">${(myScore.totalTime / 1000).toFixed(1)}s</div>
-          <div class="stat-label">tempo total</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value">${myRank}/${ranked.length}</div>
-          <div class="stat-label">classificação</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ============================================================
-// INIT
-// ============================================================
-// Verifica se há sessão salva E se o quiz ainda está ativo
-const saved = localStorage.getItem('quiz_player');
-if (saved) {
+  // Save to Supabase
   try {
-    const p = JSON.parse(saved);
-    // Verifica se o quiz está em waiting — se sim, limpa e pede nome de novo
-    fetch(`https://jdgolpmrmoamhwkiguws.supabase.co/rest/v1/quiz_session?id=eq.session`, {
-      headers: {
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZ29scG1ybW9hbWh3a2lndXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzEzNTMsImV4cCI6MjA3MzYwNzM1M30.4ulBCZ3TbkhDkth2XFhxa6MhfHV7PWMU4OQjwZRC34o'
-      }
-    }).then(r => r.json()).then(data => {
-      if (data && data[0] && data[0].status === 'waiting') {
-        // Quiz reiniciado — pede nome de novo
-        localStorage.removeItem('quiz_player');
-        renderRegister();
-      } else {
-        // Quiz em andamento — reconecta com nome salvo
-        player = p;
-        startPolling();
-      }
-    }).catch(() => {
-      localStorage.removeItem('quiz_player');
-      renderRegister();
+    await apiPost('quiz_answers', {
+      player_id: playerId,
+      player_name: playerName,
+      question_number: qNum,
+      answer: q.options[idx],
+      is_correct: isCorrect,
+      response_time_ms: responseTime
     });
   } catch(e) {
-    localStorage.removeItem('quiz_player');
-    renderRegister();
+    // retry once
+    try {
+      await new Promise(r => setTimeout(r, 1000));
+      await apiPost('quiz_answers', {
+        player_id: playerId,
+        player_name: playerName,
+        question_number: qNum,
+        answer: q.options[idx],
+        is_correct: isCorrect,
+        response_time_ms: responseTime
+      });
+    } catch(e2) { /* fail silently */ }
   }
-} else {
-  renderRegister();
+
+  showAnswered(qNum);
 }
+
+function showAnswered(qNum) {
+  const ans = myAnswers[qNum];
+  document.getElementById('card').innerHTML = `
+    <div class="answered-icon">${ans.isCorrect ? '⚡' : '🤔'}</div>
+    <div class="answered-title" style="color:${ans.isCorrect ? '#00762A' : '#888'}">Resposta enviada!</div>
+    <div class="wait-sub">Aguardando o apresentador revelar a resposta...</div>
+    <div class="time-badge">⏱ ${(ans.responseTime / 1000).toFixed(1)}s</div>
+  `;
+}
+
+async function showFinal() {
+  try {
+    const rows = await apiGet('quiz_answers', 'order=answered_at.asc');
+    const scores = {};
+    (rows || []).forEach(a => {
+      if (!scores[a.player_id]) scores[a.player_id] = { name: a.player_name, correct: 0, totalTime: 0, points: 0 };
+      if (a.is_correct) {
+        scores[a.player_id].correct++;
+        scores[a.player_id].points += Math.max(100, 1000 - Math.floor((a.response_time_ms || 0) / 10));
+      }
+      scores[a.player_id].totalTime += (a.response_time_ms || 0);
+    });
+    const ranked = Object.entries(scores).sort((a,b) => b[1].points - a[1].points || a[1].totalTime - b[1].totalTime);
+    const myRank = ranked.findIndex(([id]) => id === playerId) + 1;
+    const me = scores[playerId] || { correct: 0, points: 0, totalTime: 0 };
+    const medals = ['🥇','🥈','🥉','4️⃣'];
+    const medal = medals[myRank-1] || `#${myRank}`;
+    document.getElementById('card').innerHTML = `
+      <div class="final-rank">
+        <div class="rank-icon">${medal}</div>
+        <div class="rank-title">${myRank}º lugar!</div>
+        <div class="rank-name">${playerName}</div>
+        <div class="rank-stats">
+          <div class="stat-box"><div class="stat-value">${me.correct}</div><div class="stat-label">acertos de ${QUESTIONS.length}</div></div>
+          <div class="stat-box"><div class="stat-value">${me.points}</div><div class="stat-label">pontos totais</div></div>
+          <div class="stat-box"><div class="stat-value">${(me.totalTime/1000).toFixed(1)}s</div><div class="stat-label">tempo total</div></div>
+          <div class="stat-box"><div class="stat-value">${myRank}/${ranked.length}</div><div class="stat-label">classificação</div></div>
+        </div>
+      </div>`;
+  } catch(e) {
+    document.getElementById('card').innerHTML = `<div class="wait-title">Quiz Encerrado!</div><div class="wait-sub">Obrigado por participar, ${playerName}!</div>`;
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────
+showRegister();
 </script>
 </body>
 </html>
