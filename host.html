@@ -636,7 +636,7 @@ async function updateScoreboard() {
   });
 
   // Ordena
-  const ranked = Object.values(scores).sort((a, b) => b.points - a.points || a.totalTime - b.totalTime);
+  const ranked = Object.values(scores).sort((a, b) => b.correct - a.correct || a.totalTime - b.totalTime);
 
   renderScoreboard(ranked);
   if (state.status === 'finished') renderPodium(ranked);
