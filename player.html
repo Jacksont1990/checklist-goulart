@@ -322,7 +322,7 @@ async function showFinal() {
       }
       scores[a.player_id].totalTime += (a.response_time_ms || 0);
     });
-    const ranked = Object.entries(scores).sort((a,b) => b[1].points - a[1].points || a[1].totalTime - b[1].totalTime);
+    const ranked = Object.entries(scores).sort((a,b) => b[1].correct - a[1].correct || a[1].totalTime - b[1].totalTime);
     const myRank = ranked.findIndex(([id]) => id === playerId) + 1;
     const me = scores[playerId] || { correct: 0, points: 0, totalTime: 0 };
     const medals = ['🥇','🥈','🥉','4️⃣'];
