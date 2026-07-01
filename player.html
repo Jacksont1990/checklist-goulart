@@ -257,44 +257,14 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 // ============================================================
 const QUESTIONS = [
   {
-    text: 'O que significa a sigla OPA?',
-    options: ['Ordem, Planejamento e Ação', 'Observar, Planejar e Agir', 'Organizar, Proteger e Atuar', 'Operar, Prevenir e Alertar'],
-    correct: 1
-  },
-  {
-    text: 'Quantos cones devem ser usados para isolar a área do caminhão?',
-    options: ['2 cones', '4 cones', '3 cones', '5 cones'],
-    correct: 2
-  },
-  {
-    text: 'Quantas pessoas são permitidas subir na plataforma do caminhão ao mesmo tempo?',
-    options: ['Até 2 pessoas', 'Até 3 pessoas', 'Sem limite definido', 'Apenas 1 pessoa'],
-    correct: 3
-  },
-  {
-    text: 'Quais são 3 itens obrigatórios de segurança do veículo?',
-    options: ['Cinto, airbag e freio ABS', 'Extintor, triângulo e colete', 'Pega mão, plataforma retrátil e protetor lateral', 'Cone, lanterna e capacete'],
-    correct: 2
-  },
-  {
-    text: 'Qual é a postura correta ao pegar uma carga do piso?',
-    options: ['Dobrar a coluna e manter os joelhos esticados', 'Dobrar os joelhos e manter a coluna ereta', 'Usar apenas um braço para não forçar', 'Agachar completamente e usar os ombros'],
-    correct: 1
-  },
-  {
-    text: 'Qual a distância mínima que os cones devem ter do caminhão?',
-    options: ['50 centímetros', '2 metros', '3 metros', '1 metro'],
-    correct: 3
-  },
-  {
     text: 'Quantos veículos a Goulart possui na frota?',
-    options: ['87 veículos', '98 veículos', '113 veículos', '142 veículos'],
-    correct: 2
+    options: ['87 veículos', '113 veículos', '142 veículos', '98 veículos'],
+    correct: 1
   },
   {
     text: 'Quantos colaboradores a Goulart possui atualmente?',
-    options: ['198 colaboradores', '230 colaboradores', '310 colaboradores', '262 colaboradores'],
-    correct: 3
+    options: ['198 colaboradores', '230 colaboradores', '262 colaboradores', '310 colaboradores'],
+    correct: 2
   },
   {
     text: 'Em que ano a Goulart foi fundada?',
@@ -303,28 +273,38 @@ const QUESTIONS = [
   },
   {
     text: 'Em qual cidade a Goulart foi fundada?',
-    options: ['Florianópolis – SC', 'São José – SC', 'Antônio Carlos – SC', 'Itajaí – SC'],
-    correct: 2
+    options: ['Florianópolis – SC', 'Antônio Carlos – SC', 'São José – SC', 'Itajaí – SC'],
+    correct: 1
   },
   {
     text: 'Quais os nomes dos fundadores da Goulart Transportes?',
-    options: ['José e Carlos Goulart', 'Paulo e Ricardo Goulart', 'Antônio e Pedro Goulart', 'Jair e Tarcísio Pedro Goulart'],
-    correct: 3
+    options: ['José e Carlos Goulart', 'Jair e Tarcísio Pedro Goulart', 'Paulo e Ricardo Goulart', 'Antônio e Pedro Goulart'],
+    correct: 1
   },
   {
     text: 'Com quantos caminhões a Goulart começou suas operações?',
-    options: ['5 caminhões', '8 caminhões', '2 caminhões', '10 caminhões'],
+    options: ['5 caminhões', '10 caminhões', '2 caminhões', '8 caminhões'],
     correct: 2
   },
   {
     text: 'Em qual cidade fica a nova operação Heineken que você vai integrar?',
-    options: ['Porto Alegre – RS', 'Caxias do Sul – RS', 'Canoas – RS', 'Cachoeirinha – RS'],
-    correct: 3
+    options: ['Porto Alegre – RS', 'Caxias do Sul – RS', 'Cachoeirinha – RS', 'Canoas – RS'],
+    correct: 2
+  },
+  {
+    text: 'Quando começa a operação Heineken em Cachoeirinha?',
+    options: ['01 de junho de 2026', '08 de julho de 2026', '15 de agosto de 2026', '01 de setembro de 2026'],
+    correct: 1
+  },
+  {
+    text: 'Quantas carretas a Goulart possui na frota?',
+    options: ['15 carretas', '18 carretas', '22 carretas', '30 carretas'],
+    correct: 2
   },
   {
     text: 'O que significa a sigla EPI?',
-    options: ['Equipamento de Proteção Integrado', 'Equipamento de Prevenção Individual', 'Equipamento de Produção Interna', 'Equipamento de Proteção Individual'],
-    correct: 3
+    options: ['Equipamento de Proteção Integrado', 'Equipamento de Prevenção Individual', 'Equipamento de Proteção Individual', 'Equipamento de Produção Interna'],
+    correct: 2
   }
 ];
 
@@ -428,12 +408,11 @@ async function pollSession() {
     return;
   }
 
-  // Revelar resposta
-  if (status === 'revealing' && lastStatus === 'question') {
+  // Revelar resposta — host muda para 'question' com mesmo qNum mas o player já respondeu
+  // Detecta quando o host revela (ficamos esperando no "aguardando revelar")
+  if ((status === 'question' || status === 'revealing') && lastStatus === 'answered') {
     lastStatus = 'revealing';
-    if (myAnswers[lastQuestion] !== undefined) {
-      renderReveal(lastQuestion);
-    }
+    renderReveal(lastQuestion);
     return;
   }
 
@@ -520,6 +499,7 @@ async function selectAnswer(qNum, idx) {
 
   myAnswers[qNum] = { answerIndex: idx, correct: isCorrect, time: responseTime };
   stopTimer();
+  lastStatus = 'answered';
 
   // Desabilita botões
   document.querySelectorAll('.option-btn').forEach((b, i) => {
@@ -528,7 +508,7 @@ async function selectAnswer(qNum, idx) {
   });
 
   // Salva no Supabase
-  await sbPost('quiz_answers', {
+  const result = await sbPost('quiz_answers', {
     player_id: player.id,
     player_name: player.name,
     question_number: qNum,
@@ -536,6 +516,7 @@ async function selectAnswer(qNum, idx) {
     is_correct: isCorrect,
     response_time_ms: responseTime
   });
+  console.log('Resposta salva:', result);
 
   renderAnswered(qNum);
 }
